@@ -1,65 +1,60 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Pizza, Users, LayoutDashboard, QrCode } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="max-w-4xl w-full">
+        <div className="bg-brand-primary w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8 rotate-3 shadow-2xl shadow-brand-primary/40">
+          <Pizza size={40} className="text-white" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter mb-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          RONDA
+        </h1>
+        <p className="text-xl md:text-2xl text-slate-400 font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
+          Sistemas de misión crítica para el caos del alto volumen. <br />
+          <span className="text-brand-primary font-bold">Baja latencia. Real-time total. Resiliencia.</span>
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl mx-auto">
+          <Link
+            href="/mozo"
+            className="glass-card p-8 flex flex-col items-center gap-4 hover:border-brand-primary transition-all hover:scale-105 active:scale-95 group"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div className="bg-white/5 p-4 rounded-full group-hover:bg-brand-primary/20 transition-colors">
+              <LayoutDashboard className="text-brand-primary" size={32} />
+            </div>
+            <div className="text-left">
+              <h3 className="font-black italic text-2xl">MOZO DASHBOARD</h3>
+              <p className="text-sm text-slate-400 font-bold uppercase tracking-widest mt-1">Gestión de Salón</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/ronda/1"
+            className="glass-card p-8 flex flex-col items-center gap-4 hover:border-brand-secondary transition-all hover:scale-105 active:scale-95 group"
           >
-            Documentation
-          </a>
+            <div className="bg-white/5 p-4 rounded-full group-hover:bg-brand-secondary/20 transition-colors">
+              <QrCode className="text-brand-secondary" size={32} />
+            </div>
+            <div className="text-left">
+              <h3 className="font-black italic text-2xl">CLIENTE (QR)</h3>
+              <p className="text-sm text-slate-400 font-bold uppercase tracking-widest mt-1">Self-Service Ronda</p>
+            </div>
+          </Link>
         </div>
-      </main>
-    </div>
+
+        <footer className="mt-20 pt-8 border-t border-white/5">
+          <div className="flex justify-center gap-8 opacity-40 grayscale group-hover:grayscale-0 transition-all">
+            {/* Tech badges */}
+            <span className="font-black tracking-tighter italic">NEXT.JS 16</span>
+            <span className="font-black tracking-tighter italic">REACT 19</span>
+            <span className="font-black tracking-tighter italic">PRISMA 7</span>
+            <span className="font-black tracking-tighter italic">TAILWIND 4</span>
+          </div>
+        </footer>
+      </div>
+    </main>
   );
 }

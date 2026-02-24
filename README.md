@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ronda - Sistema de Gestión de Bares
 
-## Getting Started
+Ronda es una plataforma de gestión para bares diseñada para alta disponibilidad, baja latencia y resiliencia en entornos de red inestables. Permite la gestión en tiempo real de pedidos, mesas y comandas.
 
-First, run the development server:
+## 🚀 Stack Tecnológico
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Runtime & Package Manager**: [Bun](https://bun.sh/)
+- **Base de Datos**: PostgreSQL 16 (vía Docker)
+- **ORM**: [Prisma 7.4.x](https://www.prisma.io/)
+- **Estado Global**: [Zustand](https://github.com/pmndrs/zustand)
+- **Validación**: [Zod](https://zod.dev/)
+- **Estilos**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Iconos**: [Lucide React](https://lucide.dev/)
+- **Utilidades**: `date-fns`, `clsx`, `tailwind-merge`
+
+## 📁 Estructura del Proyecto
+
+- `src/actions/`: Lógica de negocio mediante Server Actions (Order, Table management).
+- `src/app/`: Rutas de la aplicación (Dashboard de Mozos, KDS, QR Self-Service).
+- `src/components/`: Componentes UI y vistas dinámicas (KDS Tickets, Floor Plan).
+- `src/lib/`: Singletons y utilidades core (Prisma Client).
+- `src/store/`: Gestión de estado del lado del cliente (Carrito).
+- `prisma/`: Esquema de datos, configuraciones y scripts de seeding.
+
+## ⚙️ Configuración del Proyecto
+
+### 1. Requisitos Previos
+
+Asegúrate de tener instalados:
+- [Bun](https://bun.sh/)
+- [Docker & Docker Compose](https://www.docker.com/)
+
+### 2. Infraestructura (Docker)
+
+Levanta la base de datos utilizando el archivo de configuración proporcionado:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> [!IMPORTANT]
+> La base de datos corre en el puerto **5433** para evitar conflictos con instalaciones locales de PostgreSQL.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Variables de Entorno
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Configura tu archivo `.env`:
 
-## Learn More
+```env
+DATABASE_URL="postgresql://ronda_user:ronda_password@localhost:5433/ronda_db?schema=public"
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Instalación de Dependencias
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+bun install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Configuración de Base de Datos y Seeding
 
-## Deploy on Vercel
+Sincroniza el esquema y genera el cliente:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+bun x prisma db push
+bun x prisma generate
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Poblar la base de datos con datos iniciales (mesas, productos, roles):
+
+```bash
+bun prisma/seed.ts
+```
+
+## 🛠️ Desarrollo con Prisma 7
+
+Para optimizar la conectividad y evitar problemas con los nuevos motores de Prisma 7 durante el desarrollo, este proyecto utiliza `@prisma/adapter-pg`. Esto permite una conexión directa y estable mediante el driver nativo de Node.js/Bun.
+
+## 🖥️ Comandos Disponibles
+
+- `bun dev`: Inicia el servidor de desarrollo.
+- `bun run build`: Genera el build de producción.
+- `bun prisma/seed.ts`: Ejecuta la carga manual de datos iniciales.
+- `bun x prisma studio`: Abre la interfaz visual para explorar la base de datos.
