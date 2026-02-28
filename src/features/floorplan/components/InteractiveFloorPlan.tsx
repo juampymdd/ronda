@@ -184,7 +184,12 @@ export function InteractiveFloorPlan({
         </div>
 
         {/* Table Number */}
-        <div className={cn("text-4xl font-black leading-none", isGrouped && "mt-6")}>
+        <div
+          className={cn(
+            "text-4xl font-black leading-none",
+            isGrouped && "mt-6",
+          )}
+        >
           {table.number}
         </div>
 
@@ -354,78 +359,82 @@ export function InteractiveFloorPlan({
 
         {/* Zones Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {zones.map((zone) => {
-          const zoneTables = tables.filter((t) => t.zone?.id === zone.id);
-          const totalCapacity = zoneTables.reduce(
-            (sum, t) => sum + t.capacity,
-            0,
-          );
-          const occupiedCount = zoneTables.filter(
-            (t) => t.status !== "LIBRE",
-          ).length;
+          {zones.map((zone) => {
+            const zoneTables = tables.filter((t) => t.zone?.id === zone.id);
+            const totalCapacity = zoneTables.reduce(
+              (sum, t) => sum + t.capacity,
+              0,
+            );
+            const occupiedCount = zoneTables.filter(
+              (t) => t.status !== "LIBRE",
+            ).length;
 
-          return (
-            <div
-              key={zone.id}
-              className="rounded-xl border-2 overflow-hidden"
-              style={{
-                backgroundColor: `${zone.color}10`,
-                borderColor: `${zone.color}40`,
-              }}
-            >
-              {/* Zone Header */}
+            return (
               <div
-                className="p-4 border-b-2"
+                key={zone.id}
+                className="rounded-xl border-2 overflow-hidden"
                 style={{
-                  backgroundColor: `${zone.color}20`,
+                  backgroundColor: `${zone.color}10`,
                   borderColor: `${zone.color}40`,
                 }}
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: zone.color }}
-                  />
-                  <span
-                    className="font-black text-xl"
-                    style={{ color: zone.color }}
-                  >
-                    {zone.name}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-white/70">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    <span>
-                      {totalCapacity}/{zone.capacity}
+                {/* Zone Header */}
+                <div
+                  className="p-4 border-b-2"
+                  style={{
+                    backgroundColor: `${zone.color}20`,
+                    borderColor: `${zone.color}40`,
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: zone.color }}
+                    />
+                    <span
+                      className="font-black text-xl"
+                      style={{ color: zone.color }}
+                    >
+                      {zone.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{occupiedCount} ocupadas</span>
+                  <div className="flex items-center gap-4 text-xs text-white/70">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      <span>
+                        {totalCapacity}/{zone.capacity}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{occupiedCount} ocupadas</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Tables Grid */}
-              <div className="p-4">
-                <div className="grid grid-cols-2 gap-3">
-                  {zoneTables.map((table) => (
-                    <TableCard key={table.id} table={table} showZone={false} />
-                  ))}
-                </div>
-
-                {zoneTables.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <MapPin className="w-8 h-8 text-white/20 mb-2" />
-                    <p className="text-white/40 text-xs">Sin mesas</p>
+                {/* Tables Grid */}
+                <div className="p-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    {zoneTables.map((table) => (
+                      <TableCard
+                        key={table.id}
+                        table={table}
+                        showZone={false}
+                      />
+                    ))}
                   </div>
-                )}
+
+                  {zoneTables.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <MapPin className="w-8 h-8 text-white/20 mb-2" />
+                      <p className="text-white/40 text-xs">Sin mesas</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
         {/* Group Tables Modal */}
         <GroupTablesModal

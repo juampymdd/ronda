@@ -61,7 +61,7 @@ export function GroupTablesModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (selectedTableIds.length < 2) {
       setError("Debe seleccionar al menos 2 mesas");
       return;
@@ -111,7 +111,10 @@ export function GroupTablesModal({
   const previewName =
     groupName ||
     (selectedTables.length > 0
-      ? `Mesa ${selectedTables.map((t) => t.number).sort((a, b) => a - b).join("+")}`
+      ? `Mesa ${selectedTables
+          .map((t) => t.number)
+          .sort((a, b) => a - b)
+          .join("+")}`
       : "");
 
   return (

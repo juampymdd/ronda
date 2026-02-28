@@ -116,7 +116,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate default name if not provided
-    const groupName = name || `Mesa ${tables.map((t) => t.number).sort((a, b) => a - b).join("+")}`;
+    const groupName =
+      name ||
+      `Mesa ${tables
+        .map((t) => t.number)
+        .sort((a, b) => a - b)
+        .join("+")}`;
 
     // Create table group and update tables
     const tableGroup = await prisma.$transaction(async (tx) => {

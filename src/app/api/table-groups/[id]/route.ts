@@ -35,7 +35,8 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: "No se puede separar el grupo mientras tenga rondas activas. Cierre las rondas primero.",
+          error:
+            "No se puede separar el grupo mientras tenga rondas activas. Cierre las rondas primero.",
         },
         { status: 400 },
       );
