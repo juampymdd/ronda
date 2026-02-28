@@ -3,67 +3,345 @@
 import React from "react";
 import { TableStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
-import { Users, Clock } from "lucide-react";
+import { Users, Clock, MapPin, Edit } from "lucide-react";
+
+interface Zone {
+  id: string;
+  name: string;
+  color: string;
+  capacity: number;
+  width: number;
+  height: number;
+}
 
 interface Table {
-    id: string;
-    number: number;
-    capacity: number;
-    status: TableStatus;
-    x: number;
-    y: number;
-    updatedAt: Date;
+  id: string;
+  number: number;
+  capacity: number;
+  status: TableStatus;
+  zone: Zone | null;
+  x: number;
+  y: number;
+  updatedAt: Date;
 }
 
 interface Props {
-    tables: Table[];
-    onTableClick: (table: Table) => void;
+  tables: Table[];
+  onTableClick: (table: Table) => void;
+  onTableContextMenu?: (table: Table, e: React.MouseEvent) => void;
+  adminMode?: boolean;
+  onPositionUpdate?: () => void;
+  selectedZoneFilter?: string; // "TODAS" or zone name
 }
 
 const statusColors: Record<TableStatus, string> = {
-    LIBRE: "bg-emerald-500/10 border-emerald-500 text-emerald-500 hover:bg-emerald-500/20",
-    OCUPADA: "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20",
-    PIDIENDO: "bg-sky-500/10 border-sky-500 text-sky-500 hover:bg-sky-500/20",
-    ESPERANDO: "bg-rose-500/10 border-rose-500 text-rose-500 hover:bg-rose-500/20 animate-pulse",
-    PAGANDO: "bg-violet-500/10 border-violet-500 text-violet-500 hover:bg-violet-500/20",
+  LIBRE:
+    "bg-emerald-500/10 border-emerald-500 text-emerald-500 hover:bg-emerald-500/20",
+  OCUPADA:
+    "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20",
+  PIDIENDO: "bg-sky-500/10 border-sky-500 text-sky-500 hover:bg-sky-500/20",
+  ESPERANDO:
+    "bg-rose-500/10 border-rose-500 text-rose-500 hover:bg-rose-500/20",
+  PAGANDO:
+    "bg-violet-500/10 border-violet-500 text-violet-500 hover:bg-violet-500/20",
 };
 
-export function InteractiveFloorPlan({ tables, onTableClick }: Props) {
-    return (
-        <div className="relative w-full h-[600px] bg-slate-950 rounded-2xl border border-white/10 overflow-hidden shadow-2xl p-8">
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
-                style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+const statusLabels: Record<TableStatus, string> = {
+  LIBRE: "Libre",
+  OCUPADA: "Ocupada",
+  PIDIENDO: "Pidiendo",
+  ESPERANDO: "Esperando",
+  PAGANDO: "Pagando",
+};
 
-            {tables.map((table) => {
-                const isWaitingTooLong = table.status === "ESPERANDO" &&
-                    (new Date().getTime() - new Date(table.updatedAt).getTime()) > 15 * 60 * 1000;
+export function InteractiveFloorPlan({
+  tables,
+  onTableClick,
+  onTableContextMenu,
+  adminMode = false,
+  onPositionUpdate,
+  selectedZoneFilter = "TODAS",
+}: Props) {
+  // Get unique zones from tables
+  const zones = Array.from(
+    new Map(
+      tables.filter((t) => t.zone).map((t) => [t.zone!.id, t.zone!]),
+    ).values(),
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
-                return (
-                    <button
-                        key={table.id}
-                        onClick={() => onTableClick(table)}
-                        style={{ left: `${table.x}px`, top: `${table.y}px` }}
-                        className={cn(
-                            "absolute w-24 h-24 rounded-xl border-2 flex flex-col items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 group shadow-lg backdrop-blur-sm",
-                            statusColors[table.status],
-                            isWaitingTooLong && "border-red-600 bg-red-600/20 ring-4 ring-red-600/30"
-                        )}
-                    >
-                        <span className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">Mesa</span>
-                        <span className="text-3xl font-black mb-1">{table.number}</span>
-                        <div className="flex items-center gap-1 opacity-80">
-                            <Users size={12} />
-                            <span className="text-[10px] font-bold">{table.capacity}</span>
-                        </div>
-
-                        {isWaitingTooLong && (
-                            <div className="absolute -top-2 -right-2 bg-red-600 text-white p-1 rounded-full shadow-lg animate-bounce">
-                                <Clock size={14} />
-                            </div>
-                        )}
-                    </button>
-                );
-            })}
-        </div>
+  const getTimeInStatus = (updatedAt: Date) => {
+    const minutes = Math.floor(
+      (new Date().getTime() - new Date(updatedAt).getTime()) / 60000,
     );
+    if (minutes < 1) return "Ahora";
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours}h ${minutes % 60}m`;
+  };
+
+  const TableCard = ({
+    table,
+    showZone = false,
+  }: {
+    table: Table;
+    showZone?: boolean;
+  }) => {
+    const isWaitingTooLong =
+      table.status === "ESPERANDO" &&
+      new Date().getTime() - new Date(table.updatedAt).getTime() >
+        15 * 60 * 1000;
+
+    return (
+      <button
+        onClick={() => onTableClick(table)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          onTableContextMenu?.(table, e);
+        }}
+        className={cn(
+          "group relative rounded-xl border-2 p-4 transition-all duration-200",
+          "flex flex-col gap-3 text-left",
+          "hover:scale-[1.02] active:scale-95",
+          statusColors[table.status],
+          isWaitingTooLong && "ring-4 ring-red-600/30 animate-pulse",
+        )}
+      >
+        {/* Status Badge */}
+        <div className="absolute top-2 right-2">
+          <div className="px-2 py-0.5 rounded-md bg-current/20 text-[10px] font-bold uppercase tracking-wider">
+            {statusLabels[table.status]}
+          </div>
+        </div>
+
+        {/* Table Number */}
+        <div className="text-4xl font-black leading-none">{table.number}</div>
+
+        {/* Zone (only in "TODAS" view) */}
+        {showZone && table.zone && (
+          <div className="flex items-center gap-1.5 text-xs opacity-60">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: table.zone.color }}
+            />
+            <span>{table.zone.name}</span>
+          </div>
+        )}
+
+        {/* Info Row */}
+        <div className="flex items-center justify-between text-xs opacity-75 gap-2">
+          <div className="flex items-center gap-1">
+            <Users className="w-3.5 h-3.5" />
+            <span className="font-medium">{table.capacity}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5" />
+            <span className="font-medium">
+              {getTimeInStatus(table.updatedAt)}
+            </span>
+          </div>
+        </div>
+
+        {/* Admin Edit Button */}
+        {adminMode && (
+          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="p-1.5 rounded-md bg-white/10 backdrop-blur-sm">
+              <Edit className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        )}
+
+        {/* Waiting Alert */}
+        {isWaitingTooLong && (
+          <div className="absolute -top-1 -left-1 bg-red-600 text-white p-1 rounded-full animate-bounce shadow-lg">
+            <Clock className="w-3 h-3" />
+          </div>
+        )}
+
+        {/* Status Indicator */}
+        {table.status !== "LIBRE" && (
+          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-current shadow-lg" />
+        )}
+      </button>
+    );
+  };
+
+  if (zones.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <MapPin className="w-16 h-16 text-white/20 mb-4" />
+        <p className="text-white/60 text-lg">No hay zonas configuradas</p>
+        <p className="text-white/40 text-sm mt-2">
+          Crea zonas desde la sección de administración
+        </p>
+      </div>
+    );
+  }
+
+  // Show all zones in grid layout (Kanban style)
+  if (selectedZoneFilter === "TODAS") {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {zones.map((zone) => {
+          const zoneTables = tables.filter((t) => t.zone?.id === zone.id);
+          const totalCapacity = zoneTables.reduce(
+            (sum, t) => sum + t.capacity,
+            0,
+          );
+          const occupiedCount = zoneTables.filter(
+            (t) => t.status !== "LIBRE",
+          ).length;
+
+          return (
+            <div
+              key={zone.id}
+              className="rounded-xl border-2 overflow-hidden"
+              style={{
+                backgroundColor: `${zone.color}10`,
+                borderColor: `${zone.color}40`,
+              }}
+            >
+              {/* Zone Header */}
+              <div
+                className="p-4 border-b-2"
+                style={{
+                  backgroundColor: `${zone.color}20`,
+                  borderColor: `${zone.color}40`,
+                }}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: zone.color }}
+                  />
+                  <span
+                    className="font-black text-xl"
+                    style={{ color: zone.color }}
+                  >
+                    {zone.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-white/70">
+                  <div className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    <span>
+                      {totalCapacity}/{zone.capacity}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    <span>{occupiedCount} ocupadas</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tables Grid */}
+              <div className="p-4">
+                <div className="grid grid-cols-2 gap-3">
+                  {zoneTables.map((table) => (
+                    <TableCard key={table.id} table={table} showZone={false} />
+                  ))}
+                </div>
+
+                {zoneTables.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <MapPin className="w-8 h-8 text-white/20 mb-2" />
+                    <p className="text-white/40 text-xs">Sin mesas</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Show single zone in grid layout
+  const selectedZone = zones.find((z) => z.name === selectedZoneFilter);
+  if (!selectedZone) return null;
+
+  const zoneTables = tables.filter((t) => t.zone?.id === selectedZone.id);
+  const totalCapacity = zoneTables.reduce((sum, t) => sum + t.capacity, 0);
+  const occupiedCount = zoneTables.filter((t) => t.status !== "LIBRE").length;
+
+  return (
+    <div className="space-y-6">
+      {/* Zone Header & Stats */}
+      <div
+        className="rounded-xl border-2 overflow-hidden"
+        style={{
+          backgroundColor: `${selectedZone.color}10`,
+          borderColor: `${selectedZone.color}40`,
+        }}
+      >
+        <div
+          className="p-6 border-b-2"
+          style={{
+            backgroundColor: `${selectedZone.color}20`,
+            borderColor: `${selectedZone.color}40`,
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div
+                  className="w-5 h-5 rounded-full"
+                  style={{ backgroundColor: selectedZone.color }}
+                />
+                <span
+                  className="font-black text-2xl"
+                  style={{ color: selectedZone.color }}
+                >
+                  {selectedZone.name}
+                </span>
+                <span className="text-lg text-white/60">
+                  {zoneTables.length} mesas
+                </span>
+              </div>
+              <div className="flex items-center gap-6 text-sm text-white/70">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  <span>
+                    {totalCapacity} / {selectedZone.capacity} personas
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{occupiedCount} ocupadas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tables Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        {zoneTables.map((table) => (
+          <TableCard key={table.id} table={table} showZone={false} />
+        ))}
+      </div>
+
+      {zoneTables.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <MapPin className="w-12 h-12 text-white/20 mb-3" />
+          <p className="text-white/60 text-lg">No hay mesas en esta zona</p>
+          <p className="text-white/40 text-sm mt-2">
+            Crea mesas desde el modo administración
+          </p>
+        </div>
+      )}
+
+      {/* Capacity Warning */}
+      {totalCapacity > selectedZone.capacity && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 text-amber-400 text-sm flex items-center gap-3">
+          <Users className="w-5 h-5" />
+          <span>
+            ⚠️ La capacidad total de las mesas ({totalCapacity}) excede la
+            capacidad de la zona ({selectedZone.capacity})
+          </span>
+        </div>
+      )}
+    </div>
+  );
 }

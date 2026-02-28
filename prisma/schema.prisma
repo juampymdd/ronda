@@ -18,6 +18,7 @@ enum Role {
 
 enum TableStatus {
   LIBRE
+  RESERVADA
   OCUPADA
   PIDIENDO
   ESPERANDO
@@ -31,24 +32,33 @@ enum OrderStatus {
   ENTREGADO
 }
 
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  SEATED
+  NO_SHOW
+}
+
 enum ProductType {
   BARRRA
   COCINA
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   password      String? // For Credentials provider
-  role          Role      @default(MOZO)
+  role          Role          @default(MOZO)
   orders        Order[] // Keep orders field as it's not explicitly removed from the final User model structure
+  reservations  Reservation[]
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model Account {
@@ -86,16 +96,31 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Zone {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String   @default("#3b82f6") // Hex color for UI
+  capacity  Int      @default(20) // Maximum people capacity for this zone
+  width     Float    @default(600) // Width in pixels for floor plan
+  height    Float    @default(400) // Height in pixels for floor plan
+  tables    Table[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Table {
-  id        String      @id @default(cuid())
-  number    Int         @unique
-  capacity  Int
-  status    TableStatus @default(LIBRE)
-  x         Float // Floor plan coordinates
-  y         Float // Floor plan coordinates
-  rondas    Ronda[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id           String        @id @default(cuid())
+  number       Int           @unique
+  capacity     Int
+  status       TableStatus   @default(LIBRE)
+  zoneId       String?
+  zone         Zone?         @relation(fields: [zoneId], references: [id])
+  x            Float // Floor plan coordinates
+  y            Float // Floor plan coordinates
+  rondas       Ronda[]
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Ronda {
@@ -142,6 +167,27 @@ model Product {
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+}
+
+model Reservation {
+  id              String            @id @default(cuid())
+  tableId         String
+  table           Table             @relation(fields: [tableId], references: [id])
+  customerName    String
+  customerPhone   String?
+  partySize       Int // Number of people
+  reservationTime DateTime // When the reservation is for
+  duration        Int               @default(120) // Duration in minutes (default 2 hours)
+  status          ReservationStatus @default(PENDING)
+  notes           String?
+  createdById     String
+  createdBy       User              @relation(fields: [createdById], references: [id])
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([tableId])
+  @@index([reservationTime])
+  @@index([status])
 }
 
 model Payment {
