@@ -34,6 +34,11 @@ interface Zone {
   height: number;
 }
 
+interface TableGroup {
+  id: string;
+  name: string | null;
+}
+
 interface Table {
   id: string;
   number: number;
@@ -43,6 +48,8 @@ interface Table {
   x: number;
   y: number;
   updatedAt: Date;
+  tableGroupId?: string | null;
+  tableGroup?: TableGroup | null;
 }
 
 export default function AdminDashboard() {
@@ -346,8 +353,9 @@ export default function AdminDashboard() {
           <InteractiveFloorPlan
             tables={tables}
             onTableClick={handleTableClick}
-            adminMode={false}
+            adminMode={true}
             selectedZoneFilter={selectedZone}
+            onRefresh={loadTables}
           />
         </>
       ) : activeTab === "pedidos" ? (

@@ -119,18 +119,32 @@ model Table {
   y            Float // Floor plan coordinates
   rondas       Ronda[]
   reservations Reservation[]
+  tableGroupId String?
+  tableGroup   TableGroup?   @relation(fields: [tableGroupId], references: [id])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
 
-model Ronda {
+model TableGroup {
   id        String   @id @default(cuid())
-  tableId   String
-  table     Table    @relation(fields: [tableId], references: [id])
-  orders    Order[]
+  name      String? // Optional name like "Mesa 5+6" or "Grupo VIP"
+  tables    Table[]
+  rondas    Ronda[]
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Ronda {
+  id           String      @id @default(cuid())
+  tableId      String?
+  table        Table?      @relation(fields: [tableId], references: [id])
+  tableGroupId String?
+  tableGroup   TableGroup? @relation(fields: [tableGroupId], references: [id])
+  orders       Order[]
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Order {

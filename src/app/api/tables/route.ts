@@ -6,6 +6,7 @@ export async function GET() {
     const tables = await prisma.table.findMany({
       include: {
         zone: true,
+        tableGroup: true,
       },
       orderBy: [{ number: "asc" }],
     });

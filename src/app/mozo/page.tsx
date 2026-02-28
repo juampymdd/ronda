@@ -25,6 +25,11 @@ interface Zone {
   height: number;
 }
 
+interface TableGroup {
+  id: string;
+  name: string | null;
+}
+
 interface Table {
   id: string;
   number: number;
@@ -34,6 +39,8 @@ interface Table {
   x: number;
   y: number;
   updatedAt: Date;
+  tableGroupId?: string | null;
+  tableGroup?: TableGroup | null;
 }
 
 export default function MozoDashboard() {
@@ -255,6 +262,7 @@ export default function MozoDashboard() {
             adminMode={adminMode}
             onPositionUpdate={loadTables}
             selectedZoneFilter={selectedZone}
+            onRefresh={loadTables}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
