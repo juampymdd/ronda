@@ -99,8 +99,7 @@ export function ReservationCard({
   const reservationDate = new Date(reservation.reservationTime);
   const now = new Date();
   const isPast = reservationDate < now;
-  const isToday =
-    reservationDate.toDateString() === now.toDateString();
+  const isToday = reservationDate.toDateString() === now.toDateString();
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("es-AR", {
@@ -122,7 +121,9 @@ export function ReservationCard({
       className={cn(
         "glass-card p-5 border-2 transition-all hover:scale-[1.01]",
         config.border,
-        isPast && reservation.status === ReservationStatus.PENDING && "opacity-60",
+        isPast &&
+          reservation.status === ReservationStatus.PENDING &&
+          "opacity-60",
       )}
     >
       {/* Header */}
@@ -140,12 +141,24 @@ export function ReservationCard({
             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
               {reservation.table.zone?.name || "Sin zona"}
             </p>
-            <p className="text-lg font-bold text-white">Mesa {reservation.table.number}</p>
+            <p className="text-lg font-bold text-white">
+              Mesa {reservation.table.number}
+            </p>
           </div>
         </div>
-        <div className={cn("px-3 py-1.5 rounded-lg flex items-center gap-1.5", config.bg)}>
+        <div
+          className={cn(
+            "px-3 py-1.5 rounded-lg flex items-center gap-1.5",
+            config.bg,
+          )}
+        >
           <Icon size={14} className={config.color} />
-          <span className={cn("text-xs font-bold uppercase tracking-wider", config.color)}>
+          <span
+            className={cn(
+              "text-xs font-bold uppercase tracking-wider",
+              config.color,
+            )}
+          >
             {config.label}
           </span>
         </div>
@@ -173,7 +186,12 @@ export function ReservationCard({
       <div className="flex items-center gap-4 mb-4 pb-4 border-b border-white/10">
         <div className="flex items-center gap-2">
           <Calendar size={16} className="text-purple-400" />
-          <span className={cn("text-sm font-bold", isToday ? "text-purple-400" : "text-slate-300")}>
+          <span
+            className={cn(
+              "text-sm font-bold",
+              isToday ? "text-purple-400" : "text-slate-300",
+            )}
+          >
             {isToday ? "Hoy" : formatDate(reservationDate)}
           </span>
         </div>
@@ -188,7 +206,9 @@ export function ReservationCard({
       {/* Notes */}
       {reservation.notes && (
         <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-white/10">
-          <p className="text-xs text-slate-400 mb-1 uppercase tracking-wider font-bold">Notas:</p>
+          <p className="text-xs text-slate-400 mb-1 uppercase tracking-wider font-bold">
+            Notas:
+          </p>
           <p className="text-sm text-slate-300">{reservation.notes}</p>
         </div>
       )}
@@ -199,7 +219,9 @@ export function ReservationCard({
         <div className="flex gap-2">
           {reservation.status === ReservationStatus.PENDING && (
             <button
-              onClick={() => onStatusChange?.(reservation.id, ReservationStatus.CONFIRMED)}
+              onClick={() =>
+                onStatusChange?.(reservation.id, ReservationStatus.CONFIRMED)
+              }
               className="flex-1 px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-sm bg-blue-600 text-white hover:bg-blue-700 transition-all"
             >
               Confirmar
@@ -215,7 +237,9 @@ export function ReservationCard({
             </button>
           )}
           <button
-            onClick={() => onStatusChange?.(reservation.id, ReservationStatus.CANCELLED)}
+            onClick={() =>
+              onStatusChange?.(reservation.id, ReservationStatus.CANCELLED)
+            }
             className="px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-sm bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/50 transition-all"
           >
             Cancelar

@@ -45,13 +45,19 @@ export function TableSearchBar({
 
   // Get unique zones
   const zones = Array.from(
-    new Map(tables.filter((t) => t.zone).map((t) => [t.zone!.id, t.zone!])).values(),
+    new Map(
+      tables.filter((t) => t.zone).map((t) => [t.zone!.id, t.zone!]),
+    ).values(),
   );
 
   // Filter tables
   const filteredTables = tables.filter((table) => {
     // Filter by availability if needed
-    if (showOnlyAvailable && table.status !== TableStatus.LIBRE && table.status !== TableStatus.RESERVADA) {
+    if (
+      showOnlyAvailable &&
+      table.status !== TableStatus.LIBRE &&
+      table.status !== TableStatus.RESERVADA
+    ) {
       return false;
     }
 
@@ -81,12 +87,30 @@ export function TableSearchBar({
 
   const getStatusBadge = (status: TableStatus) => {
     const config = {
-      LIBRE: { label: "Libre", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/50" },
-      RESERVADA: { label: "Reservada", color: "bg-purple-500/20 text-purple-400 border-purple-500/50" },
-      OCUPADA: { label: "Ocupada", color: "bg-blue-500/20 text-blue-400 border-blue-500/50" },
-      PIDIENDO: { label: "Pidiendo", color: "bg-amber-500/20 text-amber-400 border-amber-500/50" },
-      ESPERANDO: { label: "Esperando", color: "bg-orange-500/20 text-orange-400 border-orange-500/50" },
-      PAGANDO: { label: "Pagando", color: "bg-pink-500/20 text-pink-400 border-pink-500/50" },
+      LIBRE: {
+        label: "Libre",
+        color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/50",
+      },
+      RESERVADA: {
+        label: "Reservada",
+        color: "bg-purple-500/20 text-purple-400 border-purple-500/50",
+      },
+      OCUPADA: {
+        label: "Ocupada",
+        color: "bg-blue-500/20 text-blue-400 border-blue-500/50",
+      },
+      PIDIENDO: {
+        label: "Pidiendo",
+        color: "bg-amber-500/20 text-amber-400 border-amber-500/50",
+      },
+      ESPERANDO: {
+        label: "Esperando",
+        color: "bg-orange-500/20 text-orange-400 border-orange-500/50",
+      },
+      PAGANDO: {
+        label: "Pagando",
+        color: "bg-pink-500/20 text-pink-400 border-pink-500/50",
+      },
     };
     return config[status];
   };
@@ -116,7 +140,9 @@ export function TableSearchBar({
               : "bg-slate-800/50 text-slate-400 hover:text-white border border-white/10",
           )}
         >
-          Filtros {hasFilters && `(${[searchQuery, selectedZone, minCapacity].filter(Boolean).length})`}
+          Filtros{" "}
+          {hasFilters &&
+            `(${[searchQuery, selectedZone, minCapacity].filter(Boolean).length})`}
         </button>
         {hasFilters && (
           <button
@@ -184,7 +210,9 @@ export function TableSearchBar({
               {[2, 4, 6, 8].map((cap) => (
                 <button
                   key={cap}
-                  onClick={() => setMinCapacity(minCapacity === cap ? null : cap)}
+                  onClick={() =>
+                    setMinCapacity(minCapacity === cap ? null : cap)
+                  }
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-bold transition-all",
                     minCapacity === cap
@@ -204,7 +232,8 @@ export function TableSearchBar({
       <div className="glass-card p-4 border border-white/10">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-            {filteredTables.length} mesa{filteredTables.length !== 1 && "s"} encontrada
+            {filteredTables.length} mesa{filteredTables.length !== 1 && "s"}{" "}
+            encontrada
             {filteredTables.length !== 1 && "s"}
           </p>
         </div>
@@ -212,7 +241,9 @@ export function TableSearchBar({
         {filteredTables.length === 0 ? (
           <div className="py-8 text-center">
             <Search className="mx-auto h-12 w-12 text-slate-600 mb-3" />
-            <p className="text-slate-400">No se encontraron mesas con estos filtros</p>
+            <p className="text-slate-400">
+              No se encontraron mesas con estos filtros
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
@@ -235,11 +266,20 @@ export function TableSearchBar({
                         {table.number}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-white">Mesa {table.number}</p>
-                        <p className="text-xs text-slate-400">{table.zone?.name || "Sin zona"}</p>
+                        <p className="text-sm font-bold text-white">
+                          Mesa {table.number}
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          {table.zone?.name || "Sin zona"}
+                        </p>
                       </div>
                     </div>
-                    <div className={cn("px-2 py-1 rounded text-xs font-bold border", statusConfig.color)}>
+                    <div
+                      className={cn(
+                        "px-2 py-1 rounded text-xs font-bold border",
+                        statusConfig.color,
+                      )}
+                    >
                       {statusConfig.label}
                     </div>
                   </div>

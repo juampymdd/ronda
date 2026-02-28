@@ -13,7 +13,14 @@ import { OrdersView } from "@/features/admin/components/OrdersView";
 import { TableSearchBar } from "@/components/TableSearchBar";
 import { ReservationModal } from "@/components/ReservationModal";
 import { ReservationCard } from "@/components/ReservationCard";
-import { LayoutGrid, BarChart3, Receipt, ClipboardList, CalendarCheck, Plus } from "lucide-react";
+import {
+  LayoutGrid,
+  BarChart3,
+  Receipt,
+  ClipboardList,
+  CalendarCheck,
+  Plus,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TableStatus, ReservationStatus } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -40,7 +47,9 @@ interface Table {
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState<"mesas" | "stats" | "pedidos" | "reservas">("mesas");
+  const [activeTab, setActiveTab] = useState<
+    "mesas" | "stats" | "pedidos" | "reservas"
+  >("mesas");
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedZone, setSelectedZone] = useState("TODAS");
   const [closeTableModal, setCloseTableModal] = useState(false);
@@ -85,7 +94,9 @@ export default function AdminDashboard() {
     try {
       const params = new URLSearchParams({
         date: reservationFilters.date,
-        ...(reservationFilters.status !== "ALL" && { status: reservationFilters.status }),
+        ...(reservationFilters.status !== "ALL" && {
+          status: reservationFilters.status,
+        }),
       });
       const response = await fetch(`/api/reservations?${params}`);
       const result = await response.json();
@@ -120,7 +131,10 @@ export default function AdminDashboard() {
     setReservationModal(true);
   };
 
-  const handleReservationStatusChange = async (id: string, status: ReservationStatus) => {
+  const handleReservationStatusChange = async (
+    id: string,
+    status: ReservationStatus,
+  ) => {
     try {
       const response = await fetch(`/api/reservations/${id}/status`, {
         method: "PATCH",
@@ -348,7 +362,10 @@ export default function AdminDashboard() {
                 type="date"
                 value={reservationFilters.date}
                 onChange={(e) =>
-                  setReservationFilters({ ...reservationFilters, date: e.target.value })
+                  setReservationFilters({
+                    ...reservationFilters,
+                    date: e.target.value,
+                  })
                 }
                 className="px-4 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
@@ -356,7 +373,10 @@ export default function AdminDashboard() {
               <select
                 value={reservationFilters.status}
                 onChange={(e) =>
-                  setReservationFilters({ ...reservationFilters, status: e.target.value })
+                  setReservationFilters({
+                    ...reservationFilters,
+                    status: e.target.value,
+                  })
                 }
                 className="px-4 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
               >
@@ -395,7 +415,9 @@ export default function AdminDashboard() {
             {reservations.length === 0 ? (
               <div className="glass-card p-12 text-center border border-white/10">
                 <CalendarCheck className="mx-auto h-16 w-16 text-slate-600 mb-4" />
-                <p className="text-slate-400 text-lg">No hay reservas para esta fecha</p>
+                <p className="text-slate-400 text-lg">
+                  No hay reservas para esta fecha
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

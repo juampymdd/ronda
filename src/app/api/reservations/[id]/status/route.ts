@@ -60,20 +60,30 @@ export async function PATCH(
     });
 
     // Handle table status updates based on reservation status
-    if (status === ReservationStatus.CANCELLED || status === ReservationStatus.NO_SHOW) {
+    if (
+      status === ReservationStatus.CANCELLED ||
+      status === ReservationStatus.NO_SHOW
+    ) {
       // Check if there are other active reservations for this table
       const otherActiveReservations = await prisma.reservation.findMany({
         where: {
           tableId: reservation.tableId,
           id: { not: reservationId },
           status: {
-            in: [ReservationStatus.PENDING, ReservationStatus.CONFIRMED, ReservationStatus.SEATED],
+            in: [
+              ReservationStatus.PENDING,
+              ReservationStatus.CONFIRMED,
+              ReservationStatus.SEATED,
+            ],
           },
         },
       });
 
       // If no other active reservations, set table to LIBRE
-      if (otherActiveReservations.length === 0 && reservation.table.status === TableStatus.RESERVADA) {
+      if (
+        otherActiveReservations.length === 0 &&
+        reservation.table.status === TableStatus.RESERVADA
+      ) {
         await prisma.table.update({
           where: { id: reservation.tableId },
           data: { status: TableStatus.LIBRE },

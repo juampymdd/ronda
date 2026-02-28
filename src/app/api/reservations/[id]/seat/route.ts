@@ -38,7 +38,10 @@ export async function POST(
       reservation.status === ReservationStatus.NO_SHOW
     ) {
       return NextResponse.json(
-        { success: false, error: "No se puede sentar una reserva cancelada o no show" },
+        {
+          success: false,
+          error: "No se puede sentar una reserva cancelada o no show",
+        },
         { status: 400 },
       );
     }

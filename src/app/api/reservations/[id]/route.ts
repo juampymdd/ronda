@@ -30,7 +30,8 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: "No se puede eliminar una reserva ya sentada. Cierre la ronda primero.",
+          error:
+            "No se puede eliminar una reserva ya sentada. Cierre la ronda primero.",
         },
         { status: 400 },
       );
@@ -46,13 +47,20 @@ export async function DELETE(
       where: {
         tableId: reservation.tableId,
         status: {
-          in: [ReservationStatus.PENDING, ReservationStatus.CONFIRMED, ReservationStatus.SEATED],
+          in: [
+            ReservationStatus.PENDING,
+            ReservationStatus.CONFIRMED,
+            ReservationStatus.SEATED,
+          ],
         },
       },
     });
 
     // If no other active reservations and table is RESERVADA, set to LIBRE
-    if (otherActiveReservations.length === 0 && reservation.table.status === TableStatus.RESERVADA) {
+    if (
+      otherActiveReservations.length === 0 &&
+      reservation.table.status === TableStatus.RESERVADA
+    ) {
       await prisma.table.update({
         where: { id: reservation.tableId },
         data: { status: TableStatus.LIBRE },

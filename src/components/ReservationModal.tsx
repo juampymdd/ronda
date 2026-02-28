@@ -48,7 +48,9 @@ export function ReservationModal({
 
     try {
       // Combine date and time
-      const reservationDateTime = new Date(`${reservationDate}T${reservationTime}`);
+      const reservationDateTime = new Date(
+        `${reservationDate}T${reservationTime}`,
+      );
 
       const response = await fetch("/api/reservations", {
         method: "POST",
@@ -106,9 +108,12 @@ export function ReservationModal({
         {/* Header */}
         <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm p-6 border-b border-white/10 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-black italic tracking-tighter">NUEVA RESERVA</h2>
+            <h2 className="text-2xl font-black italic tracking-tighter">
+              NUEVA RESERVA
+            </h2>
             <p className="text-sm text-slate-400 mt-1">
-              Mesa {selectedTable.number} - {selectedTable.zone?.name || "Sin zona"}
+              Mesa {selectedTable.number} -{" "}
+              {selectedTable.zone?.name || "Sin zona"}
             </p>
           </div>
           <button
@@ -187,7 +192,8 @@ export function ReservationModal({
             </div>
             {partySize > selectedTable.capacity && (
               <p className="text-amber-400 text-sm mt-2">
-                ⚠️ La mesa tiene capacidad para {selectedTable.capacity} personas
+                ⚠️ La mesa tiene capacidad para {selectedTable.capacity}{" "}
+                personas
               </p>
             )}
           </div>

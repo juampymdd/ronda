@@ -110,7 +110,10 @@ export function OrdersView() {
   );
 
   const getOrderTotal = (items: OrderItem[]) => {
-    return items.reduce((sum, item) => sum + item.quantity * item.priceAtSnapshot, 0);
+    return items.reduce(
+      (sum, item) => sum + item.quantity * item.priceAtSnapshot,
+      0,
+    );
   };
 
   if (loading) {
@@ -162,7 +165,9 @@ export function OrdersView() {
         <div className="glass-card p-12 text-center">
           <Utensils className="mx-auto h-16 w-16 text-slate-600 mb-4" />
           <p className="text-slate-400 text-lg">
-            No hay pedidos {filterStatus !== "TODOS" && `en estado ${statusConfig[filterStatus as OrderStatus].label.toLowerCase()}`}
+            No hay pedidos{" "}
+            {filterStatus !== "TODOS" &&
+              `en estado ${statusConfig[filterStatus as OrderStatus].label.toLowerCase()}`}
           </p>
         </div>
       ) : (
@@ -186,7 +191,8 @@ export function OrdersView() {
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-black text-lg"
                       style={{
-                        backgroundColor: order.ronda.table.zone?.color || "#6b7280",
+                        backgroundColor:
+                          order.ronda.table.zone?.color || "#6b7280",
                       }}
                     >
                       {order.ronda.table.number}
@@ -200,9 +206,19 @@ export function OrdersView() {
                       </p>
                     </div>
                   </div>
-                  <div className={cn("px-3 py-1.5 rounded-lg flex items-center gap-1.5", config.bg)}>
+                  <div
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg flex items-center gap-1.5",
+                      config.bg,
+                    )}
+                  >
                     <Icon size={14} className={config.color} />
-                    <span className={cn("text-xs font-bold uppercase tracking-wider", config.color)}>
+                    <span
+                      className={cn(
+                        "text-xs font-bold uppercase tracking-wider",
+                        config.color,
+                      )}
+                    >
                       {config.label}
                     </span>
                   </div>
@@ -225,13 +241,18 @@ export function OrdersView() {
                         <span className="text-white font-medium">
                           {item.quantity}x
                         </span>{" "}
-                        <span className="text-slate-300">{item.product.name}</span>
+                        <span className="text-slate-300">
+                          {item.product.name}
+                        </span>
                         <span className="text-xs text-slate-500 ml-2">
                           {item.product.category}
                         </span>
                       </div>
                       <span className="text-slate-400 font-mono text-xs">
-                        ${(item.quantity * item.priceAtSnapshot).toLocaleString()}
+                        $
+                        {(
+                          item.quantity * item.priceAtSnapshot
+                        ).toLocaleString()}
                       </span>
                     </div>
                   ))}

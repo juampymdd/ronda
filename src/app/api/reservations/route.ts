@@ -92,7 +92,13 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!tableId || !customerName || !partySize || !reservationTime || !createdById) {
+    if (
+      !tableId ||
+      !customerName ||
+      !partySize ||
+      !reservationTime ||
+      !createdById
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -130,13 +136,19 @@ export async function POST(req: NextRequest) {
     // Check for conflicting reservations
     const reservationDateTime = new Date(reservationTime);
     const durationMinutes = duration || 120;
-    const endTime = new Date(reservationDateTime.getTime() + durationMinutes * 60000);
+    const endTime = new Date(
+      reservationDateTime.getTime() + durationMinutes * 60000,
+    );
 
     const conflictingReservations = await prisma.reservation.findMany({
       where: {
         tableId,
         status: {
-          in: [ReservationStatus.PENDING, ReservationStatus.CONFIRMED, ReservationStatus.SEATED],
+          in: [
+            ReservationStatus.PENDING,
+            ReservationStatus.CONFIRMED,
+            ReservationStatus.SEATED,
+          ],
         },
         AND: [
           {
