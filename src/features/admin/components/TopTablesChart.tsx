@@ -78,8 +78,7 @@ export function TopTablesChart({ data }: Props) {
               name: string | undefined,
             ) => {
               if (!value) return [formatMoney(0), name || ""];
-              if (name === "revenue")
-                return [formatMoney(value), "Revenue"];
+              if (name === "revenue") return [formatMoney(value), "Revenue"];
               return [value, "Órdenes"];
             }}
           />

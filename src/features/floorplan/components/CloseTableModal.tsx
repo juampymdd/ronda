@@ -69,7 +69,12 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
     Map<string, { quantity: number; deleted: boolean }>
   >(new Map());
   const [newItems, setNewItems] = useState<
-    Array<{ productId: string; productName: string; quantity: number; price: number }>
+    Array<{
+      productId: string;
+      productName: string;
+      quantity: number;
+      price: number;
+    }>
   >([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [showProductSearch, setShowProductSearch] = useState(false);
@@ -131,7 +136,7 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
 
     const newItemsTotal = newItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
-      0
+      0,
     );
 
     return existingTotal + newItemsTotal;
@@ -149,20 +154,26 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
   const updateItemQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     setEditedItems(
-      new Map(editedItems.set(itemId, { quantity: newQuantity, deleted: false })),
+      new Map(
+        editedItems.set(itemId, { quantity: newQuantity, deleted: false }),
+      ),
     );
   };
 
   const deleteItem = (itemId: string) => {
     const currentQuantity = editedItems.get(itemId)?.quantity ?? 0;
     setEditedItems(
-      new Map(editedItems.set(itemId, { quantity: currentQuantity, deleted: true })),
+      new Map(
+        editedItems.set(itemId, { quantity: currentQuantity, deleted: true }),
+      ),
     );
   };
 
   const restoreItem = (itemId: string, originalQuantity: number) => {
     setEditedItems(
-      new Map(editedItems.set(itemId, { quantity: originalQuantity, deleted: false })),
+      new Map(
+        editedItems.set(itemId, { quantity: originalQuantity, deleted: false }),
+      ),
     );
   };
 
@@ -194,7 +205,7 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
   const filteredProducts = products.filter(
     (p) =>
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchQuery.toLowerCase())
+      p.category.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleCloseTable = async () => {
@@ -276,12 +287,13 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                 {rondaData.orders.map((order) => (
                   <div key={order.id} className="space-y-2">
                     <div className="text-xs text-slate-500">
-                      Orden {new Date(order.createdAt).toLocaleString("es-AR", { 
-                        day: "numeric", 
-                        month: "numeric", 
-                        year: "numeric", 
-                        hour: "2-digit", 
-                        minute: "2-digit" 
+                      Orden{" "}
+                      {new Date(order.createdAt).toLocaleString("es-AR", {
+                        day: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </div>
                     {order.items.map((item) => {
@@ -298,22 +310,32 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                           )}
                         >
                           <div className="flex-1">
-                            <div className="text-white font-medium">{item.product.name}</div>
-                            <div className="text-sm text-slate-400">{formatMoney(Number(item.priceAtSnapshot))} c/u</div>
+                            <div className="text-white font-medium">
+                              {item.product.name}
+                            </div>
+                            <div className="text-sm text-slate-400">
+                              {formatMoney(Number(item.priceAtSnapshot))} c/u
+                            </div>
                           </div>
 
                           {!isDeleted ? (
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => updateItemQuantity(item.id, quantity - 1)}
+                                onClick={() =>
+                                  updateItemQuantity(item.id, quantity - 1)
+                                }
                                 disabled={quantity <= 1}
                                 className="w-8 h-8 flex items-center justify-center bg-slate-700 hover:bg-slate-600 rounded disabled:opacity-30"
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
-                              <span className="w-8 text-center font-mono">{quantity}</span>
+                              <span className="w-8 text-center font-mono">
+                                {quantity}
+                              </span>
                               <button
-                                onClick={() => updateItemQuantity(item.id, quantity + 1)}
+                                onClick={() =>
+                                  updateItemQuantity(item.id, quantity + 1)
+                                }
                                 className="w-8 h-8 flex items-center justify-center bg-slate-700 hover:bg-slate-600 rounded"
                               >
                                 <Plus className="w-4 h-4" />
@@ -330,7 +352,9 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                             </div>
                           ) : (
                             <button
-                              onClick={() => restoreItem(item.id, item.quantity)}
+                              onClick={() =>
+                                restoreItem(item.id, item.quantity)
+                              }
                               className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 rounded text-sm font-bold"
                             >
                               Restaurar
@@ -357,21 +381,31 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                           className="glass-card p-4 flex justify-between items-center gap-3 border-emerald-500/50"
                         >
                           <div className="flex-1">
-                            <div className="text-white font-medium">{item.productName}</div>
-                            <div className="text-sm text-slate-400">{formatMoney(item.price)} c/u</div>
+                            <div className="text-white font-medium">
+                              {item.productName}
+                            </div>
+                            <div className="text-sm text-slate-400">
+                              {formatMoney(item.price)} c/u
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => updateNewItemQuantity(index, item.quantity - 1)}
+                              onClick={() =>
+                                updateNewItemQuantity(index, item.quantity - 1)
+                              }
                               disabled={item.quantity <= 1}
                               className="w-8 h-8 flex items-center justify-center bg-emerald-700 hover:bg-emerald-600 rounded disabled:opacity-30"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
-                            <span className="w-8 text-center font-mono text-white">{item.quantity}</span>
+                            <span className="w-8 text-center font-mono text-white">
+                              {item.quantity}
+                            </span>
                             <button
-                              onClick={() => updateNewItemQuantity(index, item.quantity + 1)}
+                              onClick={() =>
+                                updateNewItemQuantity(index, item.quantity + 1)
+                              }
                               className="w-8 h-8 flex items-center justify-center bg-emerald-700 hover:bg-emerald-600 rounded"
                             >
                               <Plus className="w-4 h-4" />
@@ -442,8 +476,12 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                           className="w-full p-3 hover:bg-slate-700 transition-colors text-left flex justify-between items-center"
                         >
                           <div>
-                            <div className="font-medium text-white">{product.name}</div>
-                            <div className="text-xs text-slate-400">{product.category}</div>
+                            <div className="font-medium text-white">
+                              {product.name}
+                            </div>
+                            <div className="text-xs text-slate-400">
+                              {product.category}
+                            </div>
                           </div>
                           <div className="font-bold text-emerald-400">
                             {formatMoney(Number(product.price))}

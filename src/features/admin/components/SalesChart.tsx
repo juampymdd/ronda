@@ -81,7 +81,9 @@ export function SalesChart({ data }: Props) {
             }}
             itemStyle={{ color: "#10b981" }}
             formatter={(value: number | undefined) =>
-              value ? [formatMoney(value), "Ventas"] : [formatMoney(0), "Ventas"]
+              value
+                ? [formatMoney(value), "Ventas"]
+                : [formatMoney(0), "Ventas"]
             }
           />
           <Area
