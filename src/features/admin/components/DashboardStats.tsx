@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Users, DollarSign, ShoppingCart, Table } from "lucide-react";
+import { formatMoney } from "@/lib/utils";
 
 interface Stats {
   totalTables: number;
@@ -40,7 +41,7 @@ export function DashboardStats({ stats }: Props) {
     },
     {
       title: "Ventas Hoy",
-      value: `$${stats.todayRevenue.toLocaleString("es-AR", { minimumFractionDigits: 0 })}`,
+      value: formatMoney(stats.todayRevenue),
       icon: DollarSign,
       color: "bg-amber-500/10 border-amber-500 text-amber-500",
       iconBg: "bg-amber-500/20",

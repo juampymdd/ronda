@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { formatMoney } from "@/lib/utils";
 
 interface Props {
   data: Array<{
@@ -37,10 +38,10 @@ export function SalesChart({ data }: Props) {
         </div>
         <div className="text-right">
           <p className="text-3xl font-black text-emerald-500">
-            ${total.toFixed(0)}
+            {formatMoney(total)}
           </p>
           <p className="text-xs text-slate-400 font-bold">
-            Promedio: ${average.toFixed(0)}/día
+            Promedio: {formatMoney(average)}/día
           </p>
         </div>
       </div>
@@ -80,7 +81,7 @@ export function SalesChart({ data }: Props) {
             }}
             itemStyle={{ color: "#10b981" }}
             formatter={(value: number | undefined) =>
-              value ? [`$${value.toFixed(2)}`, "Ventas"] : ["$0", "Ventas"]
+              value ? [formatMoney(value), "Ventas"] : [formatMoney(0), "Ventas"]
             }
           />
           <Area

@@ -40,4 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Windows reserved device name (created accidentally by some tools)
+/nul
+
 /src/generated/prisma
+.gitnexus

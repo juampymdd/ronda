@@ -50,7 +50,7 @@ export function RecentActivity({ orders }: Props) {
               <div className="flex items-center gap-4 text-sm text-slate-400">
                 <div className="flex items-center gap-1">
                   <User size={14} />
-                  <span>{order.mozo.name || "Sin asignar"}</span>
+                  <span>{order.mozo?.name || "Sin asignar"}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock size={14} />

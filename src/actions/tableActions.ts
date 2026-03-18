@@ -171,6 +171,56 @@ export async function updateTablePositionAction(
   }
 }
 
+// ==================== OPEN TABLE ====================
+const OpenTableSchema = z.object({
+  tableId: z.string().min(1),
+});
+
+export async function openTableAction(
+  rawData: z.infer<typeof OpenTableSchema>,
+): Promise<Result<any>> {
+  try {
+    const { tableId } = OpenTableSchema.parse(rawData);
+
+    return await prisma.$transaction(async (tx) => {
+      // 1. Verify table exists and is LIBRE
+      const table = await tx.table.findUnique({
+        where: { id: tableId },
+      });
+
+      if (!table) {
+        return error("Mesa no encontrada");
+      }
+
+      if (table.status !== TableStatus.LIBRE) {
+        return error("La mesa no está libre");
+      }
+
+      // 2. Create active Ronda
+      const ronda = await tx.ronda.create({
+        data: {
+          tableId,
+          isActive: true,
+        },
+      });
+
+      // 3. Mark table as OCUPADA
+      await tx.table.update({
+        where: { id: tableId },
+        data: { status: TableStatus.OCUPADA },
+      });
+
+      return success({ rondaId: ronda.id });
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      return error("Datos inválidos");
+    }
+    console.error("Open table error:", e);
+    return error("Error interno al abrir la mesa");
+  }
+}
+
 // ==================== CLOSE TABLE ====================
 const CloseTableSchema = z.object({
   tableId: z.string(),

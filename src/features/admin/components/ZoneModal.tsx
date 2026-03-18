@@ -7,6 +7,7 @@ import {
   updateZoneAction,
   deleteZoneAction,
 } from "@/actions/zoneActions";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Zone {
   id: string;
@@ -45,6 +46,7 @@ export function ZoneModal({ isOpen, onClose, zone, onSuccess }: Props) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (zone) {
@@ -98,8 +100,12 @@ export function ZoneModal({ isOpen, onClose, zone, onSuccess }: Props) {
 
   const handleDelete = async () => {
     if (!zone) return;
+    setConfirmOpen(true);
+  };
 
-    if (!confirm(`¿Eliminar zona ${zone.name}?`)) return;
+  const executeDelete = async () => {
+    if (!zone) return;
+    setConfirmOpen(false);
 
     setIsLoading(true);
     setErrorMsg("");
@@ -324,6 +330,17 @@ export function ZoneModal({ isOpen, onClose, zone, onSuccess }: Props) {
           </div>
         </form>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="ELIMINAR ZONA"
+        message={`¿Estás seguro que querés eliminar la zona "${zone?.name}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        variant="danger"
+        onConfirm={executeDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

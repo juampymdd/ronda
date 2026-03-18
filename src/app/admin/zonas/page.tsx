@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, MapPin } from "lucide-react";
 import { getZonesAction, deleteZoneAction } from "@/actions/zoneActions";
 import { ZoneModal } from "@/features/admin/components/ZoneModal";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Zone {
   id: string;
@@ -23,6 +24,9 @@ export default function ZonasPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deletingZoneId, setDeletingZoneId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   const loadZones = async () => {
     setLoading(true);
@@ -37,15 +41,23 @@ export default function ZonasPage() {
     loadZones();
   }, []);
 
-  const handleDelete = async (zoneId: string) => {
-    if (!confirm("¿Eliminar esta zona?")) return;
+  const handleDelete = (zoneId: string) => {
+    setDeletingZoneId(zoneId);
+    setDeleteError("");
+    setConfirmOpen(true);
+  };
 
-    const result = await deleteZoneAction(zoneId);
+  const executeDelete = async () => {
+    if (!deletingZoneId) return;
+    setConfirmOpen(false);
+
+    const result = await deleteZoneAction(deletingZoneId);
     if (result.success) {
       loadZones();
     } else {
-      alert(result.error);
+      setDeleteError(result.error || "Error al eliminar la zona");
     }
+    setDeletingZoneId(null);
   };
 
   return (
@@ -201,6 +213,26 @@ export default function ZonasPage() {
         zone={editingZone}
         onSuccess={loadZones}
       />
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="ELIMINAR ZONA"
+        message={`¿Estás seguro que querés eliminar la zona "${zones.find((z) => z.id === deletingZoneId)?.name}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        variant="danger"
+        onConfirm={executeDelete}
+        onCancel={() => { setConfirmOpen(false); setDeletingZoneId(null); }}
+      />
+
+      {/* Inline error toast for delete failures */}
+      {deleteError && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-xl font-bold shadow-2xl z-50">
+          {deleteError}
+          <button onClick={() => setDeleteError("")} className="ml-4 underline text-sm">Cerrar</button>
+        </div>
+      )}
     </div>
   );
 }

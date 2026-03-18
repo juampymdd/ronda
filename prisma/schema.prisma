@@ -30,6 +30,7 @@ enum OrderStatus {
   PREPARANDO
   LISTO
   ENTREGADO
+  INCOMPLETO
 }
 
 enum ReservationStatus {
@@ -109,20 +110,21 @@ model Zone {
 }
 
 model Table {
-  id           String        @id @default(cuid())
-  number       Int           @unique
-  capacity     Int
-  status       TableStatus   @default(LIBRE)
-  zoneId       String?
-  zone         Zone?         @relation(fields: [zoneId], references: [id])
-  x            Float // Floor plan coordinates
-  y            Float // Floor plan coordinates
-  rondas       Ronda[]
-  reservations Reservation[]
-  tableGroupId String?
-  tableGroup   TableGroup?   @relation(fields: [tableGroupId], references: [id])
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id               String        @id @default(cuid())
+  number           Int           @unique
+  capacity         Int
+  status           TableStatus   @default(LIBRE)
+  zoneId           String?
+  zone             Zone?         @relation(fields: [zoneId], references: [id])
+  x                Float // Floor plan coordinates
+  y                Float // Floor plan coordinates
+  rondas           Ronda[]
+  reservations     Reservation[]
+  tableGroupId     String?
+  tableGroup       TableGroup?   @relation(fields: [tableGroupId], references: [id])
+  needsAttention   Boolean       @default(false) // Cliente llamó al mozo vía QR
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
 model TableGroup {
@@ -152,8 +154,9 @@ model Order {
   status    OrderStatus @default(PENDIENTE)
   rondaId   String
   ronda     Ronda       @relation(fields: [rondaId], references: [id])
-  mozoId    String
-  mozo      User        @relation(fields: [mozoId], references: [id])
+  mozoId    String?     // Null when order comes from QR
+  mozo      User?       @relation(fields: [mozoId], references: [id])
+  source    String      @default("MOZO") // "MOZO" | "QR"
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -172,15 +175,27 @@ model OrderItem {
   updatedAt       DateTime @updatedAt
 }
 
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  color     String    @default("#a855f7") // Hex color for UI badges
+  icon      String    @default("Tag")    // Lucide icon name
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
 model Product {
-  id        String      @id @default(cuid())
-  name      String
-  category  String
-  price     Decimal     @db.Decimal(10, 2)
-  type      ProductType @default(BARRRA)
-  items     OrderItem[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id         String      @id @default(cuid())
+  name       String
+  categoryId String
+  category   Category    @relation(fields: [categoryId], references: [id])
+  price      Decimal     @db.Decimal(10, 2)
+  type       ProductType @default(BARRRA)
+  items      OrderItem[]
+  deletedAt  DateTime?   // null = activo, fecha = archivado (soft delete)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model Reservation {

@@ -4,6 +4,7 @@ import {
   TableStatus,
   ProductType,
   OrderStatus,
+  type Category,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
@@ -27,6 +28,7 @@ async function main() {
   await prisma.table.deleteMany();
   await prisma.zone.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
   await prisma.user.deleteMany();
 
   console.log("🧹 Cleaned up database");
@@ -145,174 +147,84 @@ async function main() {
   const allTables = await prisma.table.findMany();
   console.log("🪑 Created 20 tables");
 
-  // 4. Create Products
+  // 4. Create Categories
+  const categoryNames = ["Cervezas", "Tragos", "Tapeo", "Platos"];
+  const categoryRecords = await Promise.all(
+    categoryNames.map((name) => prisma.category.create({ data: { name } })),
+  );
+  const cat: Record<string, Category> = Object.fromEntries(
+    categoryRecords.map((c) => [c.name, c]),
+  );
+  console.log("🏷️  Created 4 categories");
+
+  // 5. Create Products
   const products = await Promise.all([
     // Cervezas
     prisma.product.create({
-      data: {
-        name: "IPA - Pinta",
-        category: "Cervezas",
-        price: 4500,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "IPA - Pinta", categoryId: cat["Cervezas"].id, price: 4500, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Honey - Pinta",
-        category: "Cervezas",
-        price: 4200,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Honey - Pinta", categoryId: cat["Cervezas"].id, price: 4200, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Stout - Pinta",
-        category: "Cervezas",
-        price: 4800,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Stout - Pinta", categoryId: cat["Cervezas"].id, price: 4800, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Lager - Pinta",
-        category: "Cervezas",
-        price: 4000,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Lager - Pinta", categoryId: cat["Cervezas"].id, price: 4000, type: ProductType.BARRRA },
     }),
 
     // Tragos
     prisma.product.create({
-      data: {
-        name: "Fernet con Pepsi",
-        category: "Tragos",
-        price: 3800,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Fernet con Pepsi", categoryId: cat["Tragos"].id, price: 3800, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Gin Tonic Classic",
-        category: "Tragos",
-        price: 4000,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Gin Tonic Classic", categoryId: cat["Tragos"].id, price: 4000, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Negroni",
-        category: "Tragos",
-        price: 4200,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Negroni", categoryId: cat["Tragos"].id, price: 4200, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Mojito",
-        category: "Tragos",
-        price: 4500,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Mojito", categoryId: cat["Tragos"].id, price: 4500, type: ProductType.BARRRA },
     }),
     prisma.product.create({
-      data: {
-        name: "Aperol Spritz",
-        category: "Tragos",
-        price: 4300,
-        type: ProductType.BARRRA,
-      },
+      data: { name: "Aperol Spritz", categoryId: cat["Tragos"].id, price: 4300, type: ProductType.BARRRA },
     }),
 
     // Tapeo
     prisma.product.create({
-      data: {
-        name: "Papas con Cheddar",
-        category: "Tapeo",
-        price: 5500,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Papas con Cheddar", categoryId: cat["Tapeo"].id, price: 5500, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Nachos Ronda",
-        category: "Tapeo",
-        price: 6000,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Nachos Ronda", categoryId: cat["Tapeo"].id, price: 6000, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Empanada de Carne",
-        category: "Tapeo",
-        price: 1200,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Empanada de Carne", categoryId: cat["Tapeo"].id, price: 1200, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Empanada de Pollo",
-        category: "Tapeo",
-        price: 1200,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Empanada de Pollo", categoryId: cat["Tapeo"].id, price: 1200, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Tabla de Fiambres",
-        category: "Tapeo",
-        price: 8500,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Tabla de Fiambres", categoryId: cat["Tapeo"].id, price: 8500, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Rabas",
-        category: "Tapeo",
-        price: 7000,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Rabas", categoryId: cat["Tapeo"].id, price: 7000, type: ProductType.COCINA },
     }),
 
     // Platos
     prisma.product.create({
-      data: {
-        name: "Burger XL",
-        category: "Platos",
-        price: 8500,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Burger XL", categoryId: cat["Platos"].id, price: 8500, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Pizza Muzza",
-        category: "Platos",
-        price: 7000,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Pizza Muzza", categoryId: cat["Platos"].id, price: 7000, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Pizza Especial",
-        category: "Platos",
-        price: 8500,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Pizza Especial", categoryId: cat["Platos"].id, price: 8500, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Milanesa Napolitana",
-        category: "Platos",
-        price: 9000,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Milanesa Napolitana", categoryId: cat["Platos"].id, price: 9000, type: ProductType.COCINA },
     }),
     prisma.product.create({
-      data: {
-        name: "Bife de Chorizo",
-        category: "Platos",
-        price: 12000,
-        type: ProductType.COCINA,
-      },
+      data: { name: "Bife de Chorizo", categoryId: cat["Platos"].id, price: 12000, type: ProductType.COCINA },
     }),
   ]);
 
@@ -583,6 +495,7 @@ async function main() {
   console.log(`   - ${users.length} users created`);
   console.log(`   - ${zones.length} zones created`);
   console.log(`   - 20 tables created`);
+  console.log(`   - ${categoryRecords.length} categories created`);
   console.log(`   - ${products.length} products created`);
   console.log(`   - 6 active rondas with multiple orders`);
   console.log("\n🔐 Login credentials:");

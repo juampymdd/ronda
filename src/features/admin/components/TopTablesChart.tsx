@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Award } from "lucide-react";
+import { formatMoney } from "@/lib/utils";
 
 interface Props {
   data: Array<{
@@ -37,7 +38,7 @@ export function TopTablesChart({ data }: Props) {
         </div>
         <div className="text-right">
           <p className="text-3xl font-black text-amber-500">
-            ${totalRevenue.toFixed(0)}
+            {formatMoney(totalRevenue)}
           </p>
           <p className="text-xs text-slate-400 font-bold">Revenue total</p>
         </div>
@@ -76,9 +77,9 @@ export function TopTablesChart({ data }: Props) {
               value: number | undefined,
               name: string | undefined,
             ) => {
-              if (!value) return ["$0", name || ""];
+              if (!value) return [formatMoney(0), name || ""];
               if (name === "revenue")
-                return [`$${value.toFixed(2)}`, "Revenue"];
+                return [formatMoney(value), "Revenue"];
               return [value, "Órdenes"];
             }}
           />
@@ -104,7 +105,7 @@ export function TopTablesChart({ data }: Props) {
                 {item.orders} órdenes
               </span>
               <span className="font-black text-amber-500">
-                ${item.revenue.toFixed(2)}
+                {formatMoney(item.revenue)}
               </span>
             </div>
           </div>

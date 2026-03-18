@@ -12,6 +12,8 @@ import {
   BarChart3,
   Pizza,
   LogOut,
+  Tag,
+  QrCode,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "next-auth/react";
@@ -25,7 +27,9 @@ const navigation = [
   { name: "Construcción", href: "/admin/construccion", icon: Hammer },
   { name: "Zonas", href: "/admin/zonas", icon: MapPin },
   { name: "Usuarios", href: "/admin/usuarios", icon: Users },
+  { name: "Categorías", href: "/admin/categorias", icon: Tag },
   { name: "Productos", href: "/admin/productos", icon: ShoppingBag },
+  { name: "Mesas QR", href: "/admin/mesas/qr", icon: QrCode },
   { name: "Reportes", href: "/admin/reportes", icon: BarChart3 },
 ];
 

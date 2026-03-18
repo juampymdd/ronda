@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="40" fill="#7c3aed"/>
+  <!-- Copa/vaso estilizado -->
+  <path d="M60 45 L132 45 L115 110 L96 110 L96 145 L112 145 L112 158 L80 158 L80 145 L96 145 L96 110 L77 110 Z" fill="white" opacity="0.95"/>
+  <!-- Linea de liquido -->
+  <path d="M72 78 L120 78" stroke="#c4b5fd" stroke-width="5" stroke-linecap="round"/>
+</svg>
