@@ -183,7 +183,7 @@ export function ReservationCard({
       </div>
 
       {/* Date and Time */}
-      <div className="flex items-center gap-4 mb-4 pb-4 border-b border-white/10">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4 pb-4 border-b border-white/10">
         <div className="flex items-center gap-2">
           <Calendar size={16} className="text-purple-400" />
           <span

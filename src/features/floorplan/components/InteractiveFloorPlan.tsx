@@ -21,6 +21,13 @@ interface TableGroup {
   name: string | null;
 }
 
+interface OrderStatusSummary {
+  listo: number;
+  preparando: number;
+  pendiente: number;
+  entregado: number;
+}
+
 interface Table {
   id: string;
   number: number;
@@ -33,6 +40,7 @@ interface Table {
   openedAt?: Date | string | null;
   tableGroupId?: string | null;
   tableGroup?: TableGroup | null;
+  orderStatusSummary?: OrderStatusSummary | null;
 }
 
 interface Props {
@@ -223,6 +231,34 @@ export function InteractiveFloorPlan({
             </div>
           )}
         </div>
+
+        {/* Order Status Badges */}
+        {table.orderStatusSummary && (
+          (() => {
+            const s = table.orderStatusSummary;
+            const hasBadges = s.listo > 0 || s.preparando > 0 || s.pendiente > 0;
+            if (!hasBadges) return null;
+            return (
+              <div className="flex flex-wrap gap-1">
+                {s.listo > 0 && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase tracking-wider animate-pulse">
+                    {s.listo} listo{s.listo > 1 ? "s" : ""}
+                  </span>
+                )}
+                {s.preparando > 0 && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-400 text-[9px] font-black uppercase tracking-wider">
+                    {s.preparando} prep.
+                  </span>
+                )}
+                {s.pendiente > 0 && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-wider">
+                    {s.pendiente} pend.
+                  </span>
+                )}
+              </div>
+            );
+          })()
+        )}
 
         {/* Admin Edit Button */}
         {adminMode && (

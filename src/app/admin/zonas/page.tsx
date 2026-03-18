@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, MapPin } from "lucide-react";
 import { getZonesAction, deleteZoneAction } from "@/actions/zoneActions";
 import { ZoneModal } from "@/features/admin/components/ZoneModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { SkeletonStatCard, SkeletonCard } from "@/components/skeletons";
 
 interface Zone {
   id: string;

@@ -11,17 +11,35 @@ export async function GET() {
           where: { isActive: true },
           orderBy: { createdAt: "desc" },
           take: 1,
-          select: { createdAt: true },
+          select: {
+            createdAt: true,
+            orders: {
+              select: { status: true },
+            },
+          },
         },
       },
       orderBy: [{ number: "asc" }],
     });
 
-    // Flatten: expose openedAt at top level (null when table is free)
-    const data = tables.map(({ rondas, ...rest }) => ({
-      ...rest,
-      openedAt: rondas[0]?.createdAt ?? null,
-    }));
+    // Flatten: expose openedAt + orderStatusSummary at top level
+    const data = tables.map(({ rondas, ...rest }) => {
+      const activeRonda = rondas[0] ?? null;
+      const orders = activeRonda?.orders ?? [];
+
+      const orderStatusSummary = {
+        listo: orders.filter((o) => o.status === "LISTO").length,
+        preparando: orders.filter((o) => o.status === "PREPARANDO").length,
+        pendiente: orders.filter((o) => o.status === "PENDIENTE").length,
+        entregado: orders.filter((o) => o.status === "ENTREGADO").length,
+      };
+
+      return {
+        ...rest,
+        openedAt: activeRonda?.createdAt ?? null,
+        orderStatusSummary,
+      };
+    });
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

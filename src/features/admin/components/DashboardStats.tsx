@@ -55,17 +55,17 @@ export function DashboardStats({ stats }: Props) {
         return (
           <div
             key={card.title}
-            className={`glass-card border-2 p-6 ${card.color}`}
+            className={`glass-card border-2 p-4 sm:p-6 ${card.color}`}
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-3 rounded-xl ${card.iconBg}`}>
-                <Icon size={24} />
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+              <div className={`p-2.5 sm:p-3 rounded-xl ${card.iconBg}`}>
+                <Icon size={22} />
               </div>
             </div>
             <p className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">
               {card.title}
             </p>
-            <p className="text-4xl font-black">{card.value}</p>
+            <p className="text-3xl sm:text-4xl font-black">{card.value}</p>
           </div>
         );
       })}

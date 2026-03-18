@@ -25,8 +25,8 @@ export function SalesChart({ data }: Props) {
   const average = data.length > 0 ? total / data.length : 0;
 
   return (
-    <div className="glass-card p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="glass-card p-4 sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h3 className="text-lg font-black italic flex items-center gap-2">
             <TrendingUp size={18} className="text-emerald-500" />
@@ -36,8 +36,8 @@ export function SalesChart({ data }: Props) {
             Últimos 7 días
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-3xl font-black text-emerald-500">
+        <div className="sm:text-right">
+          <p className="text-2xl sm:text-3xl font-black text-emerald-500">
             {formatMoney(total)}
           </p>
           <p className="text-xs text-slate-400 font-bold">

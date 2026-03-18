@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, User } from "lucide-react";
 import { getUsersAction, deleteUserAction } from "@/actions/userActions";
 import { UserModal } from "@/features/admin/components/UserModal";
+import { SkeletonStatCard, SkeletonTableRow } from "@/components/skeletons";
 import { Role } from "@prisma/client";
 
 interface User {

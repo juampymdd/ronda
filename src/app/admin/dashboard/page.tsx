@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { TableStatus, ReservationStatus } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { SkeletonStatCard, SkeletonReservationCard, SkeletonStatsDashboard } from "@/components/skeletons";
 
 interface Zone {
     id: string;
@@ -97,14 +98,14 @@ export default function AdminDashboard() {
 
     // ── Queries ──────────────────────────────────────────────────────────────
 
-    const { data: tables = [] } = useQuery({
+    const { data: tables = [], isLoading: tablesLoading } = useQuery({
         queryKey: ["tables"],
         queryFn: fetchTables,
         staleTime: 15000,
         refetchInterval: 30000, // dashboard no necesita 5s — LiveMonitor ya lo hace
     });
 
-    const { data: statsData } = useQuery({
+    const { data: statsData, isLoading: statsLoading } = useQuery({
         queryKey: ["admin-stats"],
         queryFn: fetchStats,
         enabled: activeTab === "stats",
@@ -112,7 +113,7 @@ export default function AdminDashboard() {
         refetchInterval: activeTab === "stats" ? 60000 : false,
     });
 
-    const { data: reservations = [] } = useQuery({
+    const { data: reservations = [], isLoading: reservationsLoading } = useQuery({
         queryKey: ["reservations", reservationFilters.date, reservationFilters.status],
         queryFn: () => fetchReservations(reservationFilters.date, reservationFilters.status),
         enabled: activeTab === "reservas",
@@ -186,11 +187,11 @@ export default function AdminDashboard() {
     // ── Render ───────────────────────────────────────────────────────────────
 
     return (
-        <div className="p-8 space-y-8">
+        <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
             {/* Header with Tabs */}
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
                 <div>
-                    <h1 className="text-4xl font-black italic tracking-tighter">DASHBOARD</h1>
+                    <h1 className="text-2xl sm:text-4xl font-black italic tracking-tighter">DASHBOARD</h1>
                     <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-1">
                         {activeTab === "mesas"
                             ? "Gestión de mesas y cobros"
@@ -203,55 +204,57 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Tab Buttons */}
-                <div className="flex gap-2 bg-slate-800/50 p-1.5 rounded-xl border border-white/10">
-                    <button
-                        onClick={() => setActiveTab("mesas")}
-                        className={cn(
-                            "px-6 py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === "mesas"
-                                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
-                                : "text-slate-400 hover:text-white hover:bg-white/5",
-                        )}
-                    >
-                        <LayoutGrid size={20} />
-                        Mesas
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("reservas")}
-                        className={cn(
-                            "px-6 py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === "reservas"
-                                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
-                                : "text-slate-400 hover:text-white hover:bg-white/5",
-                        )}
-                    >
-                        <CalendarCheck size={20} />
-                        Reservas
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("pedidos")}
-                        className={cn(
-                            "px-6 py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === "pedidos"
-                                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
-                                : "text-slate-400 hover:text-white hover:bg-white/5",
-                        )}
-                    >
-                        <ClipboardList size={20} />
-                        Pedidos
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("stats")}
-                        className={cn(
-                            "px-6 py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === "stats"
-                                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
-                                : "text-slate-400 hover:text-white hover:bg-white/5",
-                        )}
-                    >
-                        <BarChart3 size={20} />
-                        Estadísticas
-                    </button>
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                    <div className="flex gap-2 bg-slate-800/50 p-1.5 rounded-xl border border-white/10 w-max sm:w-auto">
+                        <button
+                            onClick={() => setActiveTab("mesas")}
+                            className={cn(
+                                "px-3 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2 whitespace-nowrap",
+                                activeTab === "mesas"
+                                    ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                                    : "text-slate-400 hover:text-white hover:bg-white/5",
+                            )}
+                        >
+                            <LayoutGrid size={18} />
+                            <span className="text-sm sm:text-base">Mesas</span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("reservas")}
+                            className={cn(
+                                "px-3 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2 whitespace-nowrap",
+                                activeTab === "reservas"
+                                    ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                                    : "text-slate-400 hover:text-white hover:bg-white/5",
+                            )}
+                        >
+                            <CalendarCheck size={18} />
+                            <span className="text-sm sm:text-base">Reservas</span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("pedidos")}
+                            className={cn(
+                                "px-3 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2 whitespace-nowrap",
+                                activeTab === "pedidos"
+                                    ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                                    : "text-slate-400 hover:text-white hover:bg-white/5",
+                            )}
+                        >
+                            <ClipboardList size={18} />
+                            <span className="text-sm sm:text-base">Pedidos</span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("stats")}
+                            className={cn(
+                                "px-3 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold uppercase tracking-wider transition-all flex items-center gap-2 whitespace-nowrap",
+                                activeTab === "stats"
+                                    ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                                    : "text-slate-400 hover:text-white hover:bg-white/5",
+                            )}
+                        >
+                            <BarChart3 size={18} />
+                            <span className="text-sm sm:text-base">Estadísticas</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -260,64 +263,73 @@ export default function AdminDashboard() {
                 <>
                     {/* Stats Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="glass-card p-4 border-2 border-emerald-500/50">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Mesas Libres</p>
-                            <p className="text-3xl font-black mt-2 text-emerald-400">{libreCount}</p>
-                        </div>
-                        <div className="glass-card p-4 border-2 border-amber-500/50">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Mesas Ocupadas</p>
-                            <p className="text-3xl font-black mt-2 text-amber-400">{occupiedCount}</p>
-                        </div>
-                        <div className="glass-card p-4 border-2 border-blue-500/50">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Mesas</p>
-                            <p className="text-3xl font-black mt-2">{tables.length}</p>
-                        </div>
-                        <div className="glass-card p-4 border-2 border-purple-500/50">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Zonas</p>
-                            <p className="text-3xl font-black mt-2">{uniqueZones.length}</p>
-                        </div>
+                        {tablesLoading ? (
+                            <>
+                                <SkeletonStatCard borderColor="border-emerald-500/30" />
+                                <SkeletonStatCard borderColor="border-amber-500/30" />
+                                <SkeletonStatCard borderColor="border-blue-500/30" />
+                                <SkeletonStatCard borderColor="border-purple-500/30" />
+                            </>
+                        ) : (
+                            <>
+                                <div className="glass-card p-4 border-2 border-emerald-500/50">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Mesas Libres</p>
+                                    <p className="text-3xl font-black mt-2 text-emerald-400">{libreCount}</p>
+                                </div>
+                                <div className="glass-card p-4 border-2 border-amber-500/50">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Mesas Ocupadas</p>
+                                    <p className="text-3xl font-black mt-2 text-amber-400">{occupiedCount}</p>
+                                </div>
+                                <div className="glass-card p-4 border-2 border-blue-500/50">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Mesas</p>
+                                    <p className="text-3xl font-black mt-2">{tables.length}</p>
+                                </div>
+                                <div className="glass-card p-4 border-2 border-purple-500/50">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Zonas</p>
+                                    <p className="text-3xl font-black mt-2">{uniqueZones.length}</p>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Zone Filter */}
                     <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-                                    Filtrar Zona:
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest shrink-0">
+                                    Zona:
                                 </span>
-                                <div className="flex gap-2 flex-wrap">
+                                <button
+                                    onClick={() => setSelectedZone("TODAS")}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
+                                        selectedZone === "TODAS"
+                                            ? "bg-purple-600 text-white"
+                                            : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                                    }`}
+                                >
+                                    Todas
+                                </button>
+                                {uniqueZones.map((zone) => (
                                     <button
-                                        onClick={() => setSelectedZone("TODAS")}
-                                        className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
-                                            selectedZone === "TODAS"
-                                                ? "bg-purple-600 text-white"
+                                        key={zone.id}
+                                        onClick={() => setSelectedZone(zone.name)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
+                                            selectedZone === zone.name
+                                                ? "text-white"
                                                 : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
                                         }`}
+                                        style={
+                                            selectedZone === zone.name
+                                                ? { backgroundColor: zone.color, boxShadow: `0 0 20px ${zone.color}40` }
+                                                : {}
+                                        }
                                     >
-                                        Todas
+                                        {zone.name}
                                     </button>
-                                    {uniqueZones.map((zone) => (
-                                        <button
-                                            key={zone.id}
-                                            onClick={() => setSelectedZone(zone.name)}
-                                            className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
-                                                selectedZone === zone.name
-                                                    ? "text-white"
-                                                    : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                                            }`}
-                                            style={
-                                                selectedZone === zone.name
-                                                    ? { backgroundColor: zone.color, boxShadow: `0 0 20px ${zone.color}40` }
-                                                    : {}
-                                            }
-                                        >
-                                            {zone.name}
-                                        </button>
-                                    ))}
-                                </div>
+                                ))}
                             </div>
 
-                            <div className="flex items-center gap-2 text-xs text-slate-400">
+                            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 shrink-0">
                                 <Receipt className="w-4 h-4 text-blue-400" />
                                 <span>Click en mesa ocupada para cobrar</span>
                             </div>
@@ -338,22 +350,22 @@ export default function AdminDashboard() {
             ) : activeTab === "reservas" ? (
                 <>
                     {/* Reservations Header */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2">
                             <input
                                 type="date"
                                 value={reservationFilters.date}
                                 onChange={(e) =>
                                     setReservationFilters({ ...reservationFilters, date: e.target.value })
                                 }
-                                className="px-4 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                className="px-3 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
                             />
                             <select
                                 value={reservationFilters.status}
                                 onChange={(e) =>
                                     setReservationFilters({ ...reservationFilters, status: e.target.value })
                                 }
-                                className="px-4 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                className="px-3 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
                             >
                                 <option value="ALL">Todos los estados</option>
                                 <option value="PENDING">Pendientes</option>
@@ -368,9 +380,9 @@ export default function AdminDashboard() {
                                 setSelectedTable(null);
                                 setReservationModal(true);
                             }}
-                            className="px-6 py-3 rounded-lg font-bold uppercase tracking-wider bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-600/20 transition-all flex items-center gap-2"
+                            className="px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bold uppercase tracking-wider bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-600/20 transition-all flex items-center gap-2 self-start sm:self-auto"
                         >
-                            <Plus size={20} />
+                            <Plus size={18} />
                             Nueva Reserva
                         </button>
                     </div>
@@ -383,7 +395,13 @@ export default function AdminDashboard() {
 
                     <div>
                         <h3 className="text-2xl font-black italic tracking-tighter mb-4">RESERVAS DEL DÍA</h3>
-                        {reservations.length === 0 ? (
+                        {reservationsLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <SkeletonReservationCard key={i} />
+                                ))}
+                            </div>
+                        ) : reservations.length === 0 ? (
                             <div className="glass-card p-12 text-center border border-white/10">
                                 <CalendarCheck className="mx-auto h-16 w-16 text-slate-600 mb-4" />
                                 <p className="text-slate-400 text-lg">No hay reservas para esta fecha</p>
@@ -405,7 +423,9 @@ export default function AdminDashboard() {
             ) : (
                 <>
                     {/* Stats Dashboard */}
-                    {stats && chartData ? (
+                    {statsLoading ? (
+                        <SkeletonStatsDashboard />
+                    ) : stats && chartData ? (
                         <>
                             <DashboardStats stats={stats} />
 

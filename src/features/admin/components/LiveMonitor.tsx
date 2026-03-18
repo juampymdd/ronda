@@ -4,6 +4,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SkeletonLiveMonitor } from "@/components/skeletons";
 
 interface Zone {
     id: string;
@@ -68,7 +69,7 @@ export function LiveMonitor() {
             </div>
 
             {isLoading ? (
-                <p className="text-slate-500 text-center py-8">Cargando...</p>
+                <SkeletonLiveMonitor />
             ) : (
                 <div className="space-y-6">
                     {Object.entries(zoneGroups).map(([zone, zoneTables]) => (
@@ -76,7 +77,7 @@ export function LiveMonitor() {
                             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">
                                 {zone}
                             </h3>
-                            <div className="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-10 gap-2">
+                            <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-10 gap-2">
                                 {zoneTables.map((table) => (
                                     <div
                                         key={table.id}

@@ -216,12 +216,10 @@ export function OrdersView() {
     <div className="space-y-6">
       {/* Date Filters */}
       <div className="glass-card p-4">
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <Calendar size={18} className="text-purple-400" />
-            <span className="text-sm font-bold text-white">
-              Filtrar por fecha:
-            </span>
+            <span className="text-sm font-bold text-white">Fecha:</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -272,7 +270,7 @@ export function OrdersView() {
             </button>
           )}
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-3">
             {staleResult && (
               <span
                 className={cn(
@@ -294,7 +292,12 @@ export function OrdersView() {
               title="Marca como INCOMPLETO todos los pedidos PENDIENTE/PREPARANDO de días anteriores"
             >
               <Moon size={14} />
-              {closingStale ? "Cerrando..." : "Cerrar día anterior"}
+              <span className="hidden sm:inline">
+                {closingStale ? "Cerrando..." : "Cerrar día anterior"}
+              </span>
+              <span className="sm:hidden">
+                {closingStale ? "..." : "Cerrar día"}
+              </span>
             </button>
           </div>
         </div>
@@ -482,7 +485,7 @@ export function OrdersView() {
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-sm text-slate-400">Por página:</label>
+              <label className="hidden sm:inline text-sm text-slate-400">Por página:</label>
               <select
                 value={pageSize}
                 onChange={(e) => {

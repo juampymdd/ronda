@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { InteractiveFloorPlan } from "@/features/floorplan/components/InteractiveFloorPlan";
 import { TableAdminModal } from "@/features/floorplan/components/TableAdminModal";
 import { Plus } from "lucide-react";
+import { SkeletonStatCard } from "@/components/skeletons";
 import { TableStatus } from "@prisma/client";
 
 interface Zone {

@@ -12,6 +12,7 @@ import { ProductModal } from "@/features/admin/components/ProductModal";
 import { formatMoney } from "@/lib/utils";
 import { ProductType } from "@prisma/client";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { SkeletonStatCard, SkeletonCard } from "@/components/skeletons";
 
 interface Category {
   id: string;
@@ -265,6 +266,15 @@ export default function ProductosPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {loading ? (
+          <>
+            <SkeletonStatCard borderColor="border-purple-500/30" />
+            <SkeletonStatCard borderColor="border-amber-500/30" />
+            <SkeletonStatCard borderColor="border-red-500/30" />
+            <SkeletonStatCard borderColor="border-slate-600/30" />
+          </>
+        ) : (
+          <>
         <div className="glass-card p-4 border-2 border-purple-500/50">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Activos</p>
           <p className="text-3xl font-black mt-2">{activeProducts.length}</p>
@@ -286,6 +296,8 @@ export default function ProductosPage() {
             <p className="text-3xl font-black mt-2 text-slate-500">{archivedProducts.length}</p>
             <p className="text-xs text-slate-500 mt-1">{showArchived ? "Ocultar" : "Ver"}</p>
           </button>
+        )}
+          </>
         )}
       </div>
 
@@ -328,7 +340,11 @@ export default function ProductosPage() {
       {/* Active Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <p className="text-slate-500 col-span-full text-center py-12">Cargando...</p>
+          <>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </>
         ) : filteredActive.length === 0 ? (
           <div className="col-span-full glass-card p-12 text-center">
             <ShoppingBag size={64} className="mx-auto text-purple-500 mb-4 opacity-50" />

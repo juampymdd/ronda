@@ -7,19 +7,20 @@ import { InteractiveFloorPlan } from "@/features/floorplan/components/Interactiv
 import { TableAdminModal } from "@/features/floorplan/components/TableAdminModal";
 import { OpenTableModal } from "@/features/floorplan/components/OpenTableModal";
 import { TableFilters } from "@/features/floorplan/components/TableFilters";
-import QROrdersPanel from "@/features/floorplan/components/QROrdersPanel";
+import GlobalOrdersPanel from "@/features/floorplan/components/GlobalOrdersPanel";
 import {
   LayoutGrid,
   Pizza,
   Settings,
   Plus,
   WifiOff,
-  QrCode,
+  ShoppingBag,
   LogOut,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SkeletonMozoFloorPlan } from "@/components/skeletons";
 import { TableStatus } from "@prisma/client";
 import { signOut } from "next-auth/react";
 
@@ -37,6 +38,13 @@ interface TableGroup {
   name: string | null;
 }
 
+interface OrderStatusSummary {
+  listo: number;
+  preparando: number;
+  pendiente: number;
+  entregado: number;
+}
+
 interface Table {
   id: string;
   number: number;
@@ -49,6 +57,7 @@ interface Table {
   openedAt?: Date | string | null;
   tableGroupId?: string | null;
   tableGroup?: TableGroup | null;
+  orderStatusSummary?: OrderStatusSummary | null;
 }
 
 const fetchTables = async (): Promise<Table[]> => {
@@ -165,7 +174,7 @@ export default function MozoDashboard() {
     },
     {
       key: "pedidos",
-      icon: QrCode,
+      icon: ShoppingBag,
       label: "PEDIDOS",
       onClick: () => setActiveTab("pedidos"),
       active: activeTab === "pedidos",
@@ -370,9 +379,7 @@ export default function MozoDashboard() {
 
         {/* Content */}
         {isLoading && tables.length === 0 ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="w-8 h-8 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" />
-          </div>
+          <SkeletonMozoFloorPlan />
         ) : activeTab === "mapa" ? (
           <InteractiveFloorPlan
             tables={filteredTables}
@@ -384,7 +391,7 @@ export default function MozoDashboard() {
             onRefresh={refreshTables}
           />
         ) : (
-          <QROrdersPanel />
+          <GlobalOrdersPanel />
         )}
       </main>
 

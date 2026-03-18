@@ -171,7 +171,7 @@ export function ReservationModal({
               <Users size={16} />
               Cantidad de personas *
             </label>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((size) => (
                 <button
                   key={size}
@@ -235,14 +235,14 @@ export function ReservationModal({
               <Clock size={16} />
               Duración estimada
             </label>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-5 gap-2">
               {[60, 90, 120, 150, 180].map((mins) => (
                 <button
                   key={mins}
                   type="button"
                   onClick={() => setDuration(mins)}
                   className={cn(
-                    "flex-1 py-2 rounded-lg font-bold transition-all text-sm",
+                    "py-2 rounded-lg font-bold transition-all text-xs sm:text-sm",
                     duration === mins
                       ? "bg-purple-600 text-white"
                       : "bg-slate-800/50 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10",
