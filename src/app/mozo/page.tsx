@@ -17,9 +17,11 @@ import {
   Plus,
   WifiOff,
   QrCode,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TableStatus } from "@prisma/client";
+import { signOut } from "next-auth/react";
 
 interface Zone {
   id: string;
@@ -213,6 +215,15 @@ export default function MozoDashboard() {
             <WifiOff size={20} />
           </div>
         )}
+
+        {/* Cerrar sesión */}
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="p-4 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
+          title="Cerrar sesión"
+        >
+          <LogOut size={24} />
+        </button>
       </nav>
 
       <main className="ml-24 mr-0 xl:mr-80 flex-1 h-screen overflow-y-auto p-8">
