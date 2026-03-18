@@ -5,6 +5,7 @@ import { TableStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import { Users, Clock, MapPin, Edit, Link2, Unlink } from "lucide-react";
 import { GroupTablesModal } from "@/components/GroupTablesModal";
+import { TableTimer } from "./TableTimer";
 
 interface Zone {
   id: string;
@@ -29,6 +30,7 @@ interface Table {
   x: number;
   y: number;
   updatedAt: Date;
+  openedAt?: Date | string | null;
   tableGroupId?: string | null;
   tableGroup?: TableGroup | null;
 }
@@ -210,12 +212,16 @@ export function InteractiveFloorPlan({
             <Users className="w-3.5 h-3.5" />
             <span className="font-medium">{table.capacity}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" />
-            <span className="font-medium">
-              {getTimeInStatus(table.updatedAt)}
-            </span>
-          </div>
+          {table.openedAt ? (
+            <TableTimer openedAt={table.openedAt} />
+          ) : (
+            <div className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              <span className="font-medium">
+                {getTimeInStatus(table.updatedAt)}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Admin Edit Button */}

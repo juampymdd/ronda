@@ -54,7 +54,8 @@ model User {
   image         String?
   password      String? // For Credentials provider
   role          Role          @default(MOZO)
-  orders        Order[] // Keep orders field as it's not explicitly removed from the final User model structure
+  orders        Order[]
+  closedRondas  Ronda[]       @relation("RondaClosedBy")
   reservations  Reservation[]
   accounts      Account[]
   sessions      Session[]
@@ -145,6 +146,9 @@ model Ronda {
   tableGroup   TableGroup? @relation(fields: [tableGroupId], references: [id])
   orders       Order[]
   isActive     Boolean     @default(true)
+  closedById   String?
+  closedBy     User?       @relation("RondaClosedBy", fields: [closedById], references: [id])
+  closedAt     DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 }

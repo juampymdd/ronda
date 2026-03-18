@@ -8,7 +8,7 @@ export async function POST(
   try {
     const { id: rondaId } = await params;
     const body = await request.json();
-    const { paymentMethod, itemEdits, newItems } = body;
+    const { paymentMethod, itemEdits, newItems, closedById } = body;
 
     // Get the ronda to find the first order (we'll add new items to it)
     const ronda = await prisma.ronda.findUnique({
@@ -65,9 +65,12 @@ export async function POST(
       where: { id: rondaId },
       data: {
         isActive: false,
+        closedAt: new Date(),
+        ...(closedById ? { closedById } : {}),
       },
       include: {
         table: true,
+        closedBy: { select: { id: true, name: true } },
       },
     });
 
@@ -88,11 +91,15 @@ export async function POST(
       );
     }, 0);
 
-    // TODO: Create payment record in database
-    // For now, just log it
-    console.log(
-      `Ronda ${rondaId} closed. Total: $${total}. Method: ${paymentMethod}`,
-    );
+    // Create payment record
+    await prisma.payment.create({
+      data: {
+        rondaId,
+        amount: total,
+        method: paymentMethod ?? "EFECTIVO",
+        splitType: "SINGLE",
+      },
+    });
 
     return NextResponse.json({
       success: true,

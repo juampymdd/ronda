@@ -57,9 +57,11 @@ interface Props {
   onClose: () => void;
   table: Table | null;
   onSuccess?: () => void;
+  /** ID del mozo que está cerrando la mesa (para registrar quién cobró) */
+  mozoId?: string;
 }
 
-export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
+export function CloseTableModal({ isOpen, onClose, table, onSuccess, mozoId }: Props) {
   const [loading, setLoading] = useState(false);
   const [rondaData, setRondaData] = useState<Ronda | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"EFECTIVO" | "TARJETA">(
@@ -228,6 +230,7 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
           paymentMethod,
           itemEdits: itemEdits.length > 0 ? itemEdits : undefined,
           newItems: newItems.length > 0 ? newItems : undefined,
+          ...(mozoId ? { closedById: mozoId } : {}),
         }),
       });
 
@@ -305,19 +308,26 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                         <div
                           key={item.id}
                           className={cn(
-                            "glass-card p-4 flex justify-between items-center gap-3",
+                            "glass-card p-4 flex flex-col gap-2",
                             isDeleted && "opacity-50 bg-red-500/10",
                           )}
                         >
-                          <div className="flex-1">
-                            <div className="text-white font-medium">
-                              {item.product.name}
+                          {/* Top row: name + subtotal */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="text-white font-medium leading-snug">
+                                {item.product.name}
+                              </div>
+                              <div className="text-sm text-slate-400">
+                                {formatMoney(Number(item.priceAtSnapshot))} c/u
+                              </div>
                             </div>
-                            <div className="text-sm text-slate-400">
-                              {formatMoney(Number(item.priceAtSnapshot))} c/u
+                            <div className="shrink-0 font-semibold text-lg text-white whitespace-nowrap">
+                              {formatMoney(itemTotal)}
                             </div>
                           </div>
 
+                          {/* Bottom row: controls */}
                           {!isDeleted ? (
                             <div className="flex items-center gap-2">
                               <button
@@ -342,20 +352,17 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                               </button>
                               <button
                                 onClick={() => deleteItem(item.id)}
-                                className="ml-2 px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm font-bold"
+                                className="ml-auto px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm font-bold"
                               >
                                 Eliminar
                               </button>
-                              <div className="ml-2 font-semibold text-lg text-white">
-                                {formatMoney(itemTotal)}
-                              </div>
                             </div>
                           ) : (
                             <button
                               onClick={() =>
                                 restoreItem(item.id, item.quantity)
                               }
-                              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 rounded text-sm font-bold"
+                              className="self-start px-3 py-1 bg-emerald-600 hover:bg-emerald-700 rounded text-sm font-bold"
                             >
                               Restaurar
                             </button>
@@ -378,17 +385,24 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                       return (
                         <div
                           key={index}
-                          className="glass-card p-4 flex justify-between items-center gap-3 border-emerald-500/50"
+                          className="glass-card p-4 flex flex-col gap-2 border-emerald-500/50"
                         >
-                          <div className="flex-1">
-                            <div className="text-white font-medium">
-                              {item.productName}
+                          {/* Top row: name + subtotal */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="text-white font-medium leading-snug">
+                                {item.productName}
+                              </div>
+                              <div className="text-sm text-slate-400">
+                                {formatMoney(item.price)} c/u
+                              </div>
                             </div>
-                            <div className="text-sm text-slate-400">
-                              {formatMoney(item.price)} c/u
+                            <div className="shrink-0 font-semibold text-lg text-emerald-400 whitespace-nowrap">
+                              {formatMoney(itemTotal)}
                             </div>
                           </div>
 
+                          {/* Bottom row: controls */}
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() =>
@@ -412,13 +426,10 @@ export function CloseTableModal({ isOpen, onClose, table, onSuccess }: Props) {
                             </button>
                             <button
                               onClick={() => removeNewItem(index)}
-                              className="ml-2 px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm font-bold"
+                              className="ml-auto px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm font-bold"
                             >
                               Quitar
                             </button>
-                            <div className="ml-2 font-semibold text-lg text-emerald-400">
-                              {formatMoney(itemTotal)}
-                            </div>
                           </div>
                         </div>
                       );

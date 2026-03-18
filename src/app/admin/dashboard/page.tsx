@@ -49,6 +49,7 @@ interface Table {
     x: number;
     y: number;
     updatedAt: Date;
+    openedAt?: Date | string | null;
     tableGroupId?: string | null;
     tableGroup?: TableGroup | null;
 }

@@ -15,7 +15,14 @@ export async function GET(
       },
       include: {
         orders: {
-          include: {
+          select: {
+            id: true,
+            status: true,
+            source: true,
+            createdAt: true,
+            mozo: {
+              select: { id: true, name: true },
+            },
             items: {
               select: {
                 id: true,
