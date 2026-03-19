@@ -25,21 +25,14 @@ interface Props {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Construcción", href: "/admin/construccion", icon: Hammer },
-  { name: "Zonas", href: "/admin/zonas", icon: MapPin },
-  { name: "Usuarios", href: "/admin/usuarios", icon: Users },
-  { name: "Categorías", href: "/admin/categorias", icon: Tag },
-  { name: "Productos", href: "/admin/productos", icon: ShoppingBag },
-  { name: "Mesas QR", href: "/admin/mesas/qr", icon: QrCode },
-  { name: "Reportes", href: "/admin/reportes", icon: BarChart3 },
-];
-
-// Items shown in mobile bottom nav (most frequently used)
-const bottomNavItems = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Productos", href: "/admin/productos", icon: ShoppingBag },
-  { name: "Reportes", href: "/admin/reportes", icon: BarChart3 },
+  { name: "Dashboard",    short: "Panel",    href: "/admin/dashboard",    icon: LayoutDashboard },
+  { name: "Construcción", short: "Constr.",  href: "/admin/construccion", icon: Hammer },
+  { name: "Zonas",        short: "Zonas",    href: "/admin/zonas",        icon: MapPin },
+  { name: "Usuarios",     short: "Usuarios", href: "/admin/usuarios",     icon: Users },
+  { name: "Categorías",   short: "Categ.",   href: "/admin/categorias",   icon: Tag },
+  { name: "Productos",    short: "Prods.",   href: "/admin/productos",    icon: ShoppingBag },
+  { name: "Mesas QR",     short: "QR",       href: "/admin/mesas/qr",    icon: QrCode },
+  { name: "Reportes",     short: "Report.",  href: "/admin/reportes",     icon: BarChart3 },
 ];
 
 export default function AdminLayout({ children }: Props) {
@@ -142,33 +135,35 @@ export default function AdminLayout({ children }: Props) {
       </aside>
 
       {/* ── Bottom nav — solo mobile ───────────────────────────────────── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-16 bg-slate-900 border-t border-white/10 flex items-center justify-around px-2">
-        {bottomNavItems.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all",
-                active ? "text-purple-400" : "text-slate-500",
-              )}
-            >
-              <Icon size={20} />
-              <span className="text-[9px] font-bold tracking-widest uppercase">
-                {item.name}
-              </span>
-            </Link>
-          );
-        })}
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-slate-500 hover:text-red-400 transition-all"
-        >
-          <LogOut size={20} />
-          <span className="text-[9px] font-bold tracking-widest uppercase">Salir</span>
-        </button>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-16 bg-slate-900 border-t border-white/10 overflow-x-auto">
+        <div className="flex items-center h-full px-1 gap-0.5 min-w-max">
+          {navigation.map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center gap-0.5 px-3.5 py-2 rounded-xl transition-all shrink-0",
+                  active ? "text-purple-400" : "text-slate-500",
+                )}
+              >
+                <Icon size={19} />
+                <span className="text-[9px] font-bold tracking-wide uppercase">
+                  {item.short}
+                </span>
+              </Link>
+            );
+          })}
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="flex flex-col items-center gap-0.5 px-3.5 py-2 rounded-xl text-slate-500 hover:text-red-400 transition-all shrink-0"
+          >
+            <LogOut size={19} />
+            <span className="text-[9px] font-bold tracking-wide uppercase">Salir</span>
+          </button>
+        </div>
       </nav>
 
       {/* ── Main content ───────────────────────────────────────────────── */}

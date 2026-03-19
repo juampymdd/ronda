@@ -9,10 +9,9 @@ import {
   ChefHat,
   Pizza,
   Zap,
-  Smartphone,
-  TrendingUp,
-  MapPin,
   CheckCircle2,
+  Smartphone,
+  ShoppingCart,
 } from "lucide-react";
 
 export default async function Home() {
@@ -180,7 +179,7 @@ export default async function Home() {
             </nav>
             <Link
               href="/login"
-              className="px-5 py-2.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/20 transition-all active:scale-95"
+              className="px-5 py-2.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/25 transition-all active:scale-95"
             >
               Iniciar sesión →
             </Link>
@@ -340,19 +339,14 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Floating QR badge */}
+            {/* ── QR badge con ícono Lucide ── */}
             <div className="float-badge absolute -bottom-6 -right-6 bg-slate-900 border border-white/10 rounded-2xl p-4 flex items-center gap-3.5 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
-              <div className="w-11 h-11 bg-white rounded-lg grid grid-cols-5 gap-[2px] p-1.5 shrink-0">
-                {[
-                  1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1,
-                  0, 1, 0, 1,
-                ].map((v, i) => (
-                  <span
-                    key={i}
-                    className="rounded-[1px]"
-                    style={{ background: v ? "#020817" : "transparent" }}
-                  />
-                ))}
+              <div className="w-11 h-11 bg-white rounded-lg flex items-center justify-center shrink-0">
+                <QrCode
+                  size={26}
+                  className="text-slate-950"
+                  strokeWidth={1.75}
+                />
               </div>
               <div>
                 <p className="text-sm font-bold">Escaneá y pedí</p>
@@ -466,7 +460,7 @@ export default async function Home() {
             {/* Feature grande */}
             <div className="relative overflow-hidden bg-slate-900 p-12 md:row-span-2 hover:bg-slate-900/80 transition-colors">
               <span className="feat-num">01</span>
-              <div className="w-13 h-13 w-12 h-12 rounded-xl bg-purple-600/15 flex items-center justify-center mb-6">
+              <div className="w-12 h-12 rounded-xl bg-purple-600/15 flex items-center justify-center mb-6">
                 <QrCode size={22} className="text-purple-400" />
               </div>
               <span className="inline-flex items-center px-3 py-1 rounded-full border border-purple-500/30 text-purple-400 text-[10px] font-bold uppercase tracking-[0.1em] mb-4">
@@ -497,14 +491,14 @@ export default async function Home() {
                 </p>
                 <div className="flex items-center justify-between">
                   {[
-                    { emoji: "📱", label: "Cliente\nescanea" },
-                    { emoji: "🛒", label: "Elige\ndel menú" },
-                    { emoji: "⚡", label: "KDS en\nsegundos" },
-                  ].map(({ emoji, label }, i) => (
+                    { icon: Smartphone, label: "Cliente\nescanea" },
+                    { icon: ShoppingCart, label: "Elige\ndel menú" },
+                    { icon: Zap, label: "KDS en\nsegundos" },
+                  ].map(({ icon: Icon, label }, i) => (
                     <div key={i} className="flex items-center gap-0 flex-1">
                       <div className="flex flex-col items-center flex-1">
-                        <div className="w-10 h-10 rounded-lg bg-slate-700/60 flex items-center justify-center text-xl mb-2">
-                          {emoji}
+                        <div className="w-10 h-10 rounded-lg bg-slate-700/60 flex items-center justify-center mb-2">
+                          <Icon size={18} className="text-slate-400" />
                         </div>
                         <span className="text-[10px] text-slate-500 font-semibold text-center whitespace-pre-line leading-tight">
                           {label}
@@ -708,7 +702,8 @@ export default async function Home() {
             />
             <div className="relative">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 text-purple-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-7">
-                🍕 RONDA — Sistema gastronómico
+                <Pizza size={12} />
+                RONDA — Sistema gastronómico
               </span>
               <h2
                 className="uppercase leading-[0.88] tracking-tight mb-5"

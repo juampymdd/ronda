@@ -189,7 +189,7 @@ export default function AdminDashboard() {
     return (
         <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
             {/* Header with Tabs */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
+            <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-end">
                 <div>
                     <h1 className="text-2xl sm:text-4xl font-black italic tracking-tighter">DASHBOARD</h1>
                     <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-1">
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Tab Buttons */}
-                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <div className="overflow-x-auto -mx-4 lg:mx-0 px-4 lg:px-0">
                     <div className="flex gap-2 bg-slate-800/50 p-1.5 rounded-xl border border-white/10 w-max sm:w-auto">
                         <button
                             onClick={() => setActiveTab("mesas")}

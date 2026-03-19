@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Save, Trash2, Tag } from "lucide-react";
+import { X, Save, Trash2, Tag, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import {
   createCategoryAction,
@@ -36,34 +36,64 @@ const PRESET_COLORS = [
 ];
 
 const FOOD_ICONS: { name: string; label: string }[] = [
+  // Bebidas
   { name: "Beer", label: "Cerveza" },
   { name: "Wine", label: "Vino" },
+  { name: "BottleWine", label: "Botella" },
+  { name: "Martini", label: "Cóctel" },
   { name: "Coffee", label: "Café" },
   { name: "Milk", label: "Lácteo" },
-  { name: "GlassWater", label: "Agua / Trago" },
+  { name: "GlassWater", label: "Agua" },
   { name: "CupSoda", label: "Gaseosa" },
-  { name: "Grape", label: "Frutado" },
-  { name: "Apple", label: "Fruta" },
-  { name: "Pizza", label: "Pizza" },
-  { name: "Sandwich", label: "Sandwich" },
+  { name: "Citrus", label: "Jugo" },
+  // Carnes y proteínas
   { name: "Beef", label: "Carne" },
-  { name: "Fish", label: "Pescado" },
-  { name: "Salad", label: "Ensalada" },
-  { name: "Soup", label: "Sopas" },
-  { name: "Egg", label: "Desayuno" },
-  { name: "Croissant", label: "Panadería" },
-  { name: "Cookie", label: "Postre" },
-  { name: "IceCream", label: "Helado" },
-  { name: "Candy", label: "Golosinas" },
-  { name: "Popcorn", label: "Snacks" },
+  { name: "Hamburger", label: "Hamburguesa" },
   { name: "Drumstick", label: "Pollo" },
   { name: "Ham", label: "Fiambre" },
-  { name: "Citrus", label: "Jugo" },
-  { name: "Flame", label: "Parrilla" },
+  { name: "Shrimp", label: "Mariscos" },
+  { name: "Fish", label: "Pescado" },
+  { name: "Egg", label: "Huevo" },
+  { name: "EggFried", label: "Frito" },
+  // Platos principales
+  { name: "Pizza", label: "Pizza" },
+  { name: "Slice", label: "Porción" },
+  { name: "Sandwich", label: "Sandwich" },
+  { name: "Soup", label: "Sopas" },
+  { name: "Salad", label: "Ensalada" },
+  { name: "CookingPot", label: "Guiso" },
+  // Desayuno / panadería
+  { name: "Croissant", label: "Panadería" },
+  // Frutas y verduras
+  { name: "Apple", label: "Fruta" },
+  { name: "Banana", label: "Banana" },
+  { name: "Cherry", label: "Cereza" },
+  { name: "Grape", label: "Uva" },
+  { name: "Carrot", label: "Verduras" },
+  { name: "LeafyGreen", label: "Vegetariano" },
   { name: "Leaf", label: "Vegano" },
-  { name: "Wheat", label: "Pasta" },
-  { name: "ChefHat", label: "Especial chef" },
+  { name: "Nut", label: "Frutos secos" },
+  // Postres
+  { name: "IceCream", label: "Helado" },
+  { name: "IceCream2", label: "Helado 2" },
+  { name: "IceCreamCone", label: "Helado cono" },
+  { name: "IceCreamBowl", label: "Helado taza" },
+  { name: "Donut", label: "Donas" },
+  { name: "CakeSlice", label: "Torta" },
+  { name: "Cake", label: "Cumpleaños" },
+  { name: "Cookie", label: "Galleta" },
+  { name: "Candy", label: "Golosinas" },
+  // Snacks
+  { name: "Popcorn", label: "Snacks" },
+  // Cocina / general
+  { name: "Flame", label: "Parrilla" },
+  { name: "Microwave", label: "Calentar" },
+  { name: "ForkKnife", label: "Menú" },
+  { name: "ForkKnifeCrossed", label: "Sin TACC" },
+  { name: "Utensils", label: "Cubiertos" },
   { name: "UtensilsCrossed", label: "Cocina" },
+  { name: "ChefHat", label: "Especial chef" },
+  { name: "Wheat", label: "Pasta / Cereal" },
   { name: "Tag", label: "Genérico" },
 ];
 
@@ -94,6 +124,7 @@ export function CategoryModal({ isOpen, onClose, category, onSuccess }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [iconSearch, setIconSearch] = useState("");
 
   useEffect(() => {
     if (category) {
@@ -102,6 +133,7 @@ export function CategoryModal({ isOpen, onClose, category, onSuccess }: Props) {
       setFormData({ name: "", color: "#a855f7", icon: "Beer" });
     }
     setErrorMsg("");
+    setIconSearch("");
   }, [category, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -199,36 +231,67 @@ export function CategoryModal({ isOpen, onClose, category, onSuccess }: Props) {
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
               Ícono
             </label>
-            <div className="grid grid-cols-7 gap-2">
-              {FOOD_ICONS.map(({ name, label }) => (
+            {/* Buscador */}
+            <div className="relative mb-3">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <input
+                type="text"
+                value={iconSearch}
+                onChange={(e) => setIconSearch(e.target.value)}
+                placeholder="Buscar ícono..."
+                className="w-full bg-slate-950 border border-white/10 rounded-lg pl-8 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
+              />
+              {iconSearch && (
                 <button
-                  key={name}
                   type="button"
-                  title={label}
-                  onClick={() => setFormData({ ...formData, icon: name })}
-                  className={`aspect-square rounded-xl flex items-center justify-center border-2 transition-all ${
-                    formData.icon === name
-                      ? "scale-110"
-                      : "border-white/10 hover:border-white/30 bg-white/5"
-                  }`}
-                  style={
-                    formData.icon === name
-                      ? {
-                          backgroundColor: `${formData.color}30`,
-                          borderColor: formData.color,
-                        }
-                      : {}
-                  }
+                  onClick={() => setIconSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
                 >
-                  <DynamicIcon
-                    name={name}
-                    size={18}
-                    style={{ color: formData.icon === name ? formData.color : undefined }}
-                    className={formData.icon === name ? undefined : "text-slate-400"}
-                  />
+                  <X size={12} />
                 </button>
-              ))}
+              )}
             </div>
+            {/* Grid filtrado */}
+            {(() => {
+              const filtered = FOOD_ICONS.filter(({ label, name }) =>
+                label.toLowerCase().includes(iconSearch.toLowerCase()) ||
+                name.toLowerCase().includes(iconSearch.toLowerCase())
+              );
+              return filtered.length > 0 ? (
+                <div className="grid grid-cols-7 gap-2">
+                  {filtered.map(({ name, label }) => (
+                    <button
+                      key={name}
+                      type="button"
+                      title={label}
+                      onClick={() => setFormData({ ...formData, icon: name })}
+                      className={`aspect-square rounded-xl flex items-center justify-center border-2 transition-all ${
+                        formData.icon === name
+                          ? "scale-110"
+                          : "border-white/10 hover:border-white/30 bg-white/5"
+                      }`}
+                      style={
+                        formData.icon === name
+                          ? {
+                              backgroundColor: `${formData.color}30`,
+                              borderColor: formData.color,
+                            }
+                          : {}
+                      }
+                    >
+                      <DynamicIcon
+                        name={name}
+                        size={18}
+                        style={{ color: formData.icon === name ? formData.color : undefined }}
+                        className={formData.icon === name ? undefined : "text-slate-400"}
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 text-center py-4">Sin resultados</p>
+              );
+            })()}
           </div>
 
           {/* Color */}
